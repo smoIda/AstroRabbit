@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ink: #16161a;
+  --color-ink-soft: #525252;
+
+  --color-white-ink: #f7f7f7;
+  --color-white-ink-soft: #c2c2c2;
+
+  --color-accent-ink: #a1ab91;
+  --color-accent-ink-soft: #b7beaa;
+}
+
+.dark {
+  --color-ink: #f7f7f7;
+  --color-ink-soft: #c2c2c2;
+
+  --color-white-ink: #16161a;
+  --color-white-ink-soft: #525252;
+
+  --color-accent-ink: #d7294f;
+  --color-accent-ink-soft: #e04b6c;
+}
+
+@layer utilities {
+  .font-headline {
+    font-family: var(--font-headline);
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+  }
+
+  .custom-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-red-ink);
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--color-red-ink-soft);
+  }
+}
+
+#main-background {
+  background-color: var(--color-white-ink);
+  background-image: url("@/assets/backgrounds/bg-light.svg");
+
+  &.dark {
+    background-image: url("@/assets/backgrounds/bg-dark.svg");
+  }
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-headline);
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+}
+
+#main {
+  color: var(--color-ink-soft);
+}
+
+body {
+  overflow: hidden;
+  min-height: 100dvh;
+
+  font-family: var(--font-paragraph);
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background-color: #16161a;
+}
+
+* {
+  border-color: var(--color-ink);
+
+  transition-property: color, background-color, border-color, fill, stroke;
+  transition-duration: 100ms;
+}
