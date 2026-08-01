@@ -7,19 +7,6 @@ import { useMobile } from "@/hooks/use-mobile";
 import { gsap, useGSAP } from "@/lib/anims/plugins";
 import { cn } from "@/lib/utils/cn";
 
-function Gradient() {
-  return (
-    <defs>
-      <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#16161a" />
-        <stop offset="60%" stopColor="#16161a" />
-        <stop offset="85%" stopColor="#c2c2c2" />
-        <stop offset="100%" stopColor="#f7f7f7" />
-      </linearGradient>
-    </defs>
-  );
-}
-
 const commonProps: React.SVGProps<SVGSVGElement> = {
   className: "w-full h-[25vw] min-h-60 max-h-120 shrink-0 overflow-visible",
   preserveAspectRatio: "none",
@@ -28,9 +15,7 @@ const commonProps: React.SVGProps<SVGSVGElement> = {
 const variants = {
   "Astro Rabbit": (
     <svg {...commonProps} viewBox="0 5 304 59">
-      <Gradient />
-
-      <g fillRule="nonzero" fill="url(#gradient)">
+      <g fillRule="nonzero" className="fill-ink">
         <path
           id="char-0"
           d="M23.700 5.475L26.700 63.675L16.575 63.675L16.050 53.250L11.775 53.250L11.175 63.675L1.125 63.675L4.125 5.475L23.700 5.475ZM12.300 43.125L15.525 43.125L14.100 15.675L13.725 15.675L12.300 43.125Z"
@@ -82,9 +67,7 @@ const variants = {
 
   Documents: (
     <svg {...commonProps} viewBox="0 5 304 59">
-      <Gradient />
-
-      <g fillRule="nonzero" transform="scale(1.2 1)" fill="url(#gradient)">
+      <g fillRule="nonzero" transform="scale(1.2 1)" className="fill-ink">
         <path
           id="char-0-0"
           d="M27.300 13.050L27.300 56.025Q27.300 59.400 24.600 61.500Q21.900 63.600 18.450 63.600L18.450 63.600L2.100 63.675L2.100 5.475L18.450 5.475Q21.900 5.475 24.600 7.575Q27.300 9.675 27.300 13.050L27.300 13.050ZM17.175 50.625L17.175 50.625L17.175 18.750Q17.175 15.600 14.700 15.600L14.700 15.600L12.225 15.600L12.225 53.475L14.700 53.475Q17.175 53.475 17.175 50.625Z"

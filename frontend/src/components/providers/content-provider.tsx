@@ -18,7 +18,7 @@ import { gsap } from "@/lib/anims/plugins";
 export function ContentProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const path = usePathname();
-  const scope = useParallax(mounted)
+  const scope = useParallax(mounted);
 
   const [isFirstTime] = useState(() => {
     if (typeof window !== "undefined") {
@@ -108,24 +108,12 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
         {/* parallax.js targets their data-depth elements with left: 0px;
 top: 0px, so wrapping the square in another div fixes top/left/bottom/right not workign */}
 
-        <div
-          ref={scope}
-          className="pointer-events-none absolute z-60 size-full"
-        >
+        <div ref={scope} className="pointer-events-none absolute inset-0">
           <div
             data-depth="0.08"
-            className="*:border-ink-soft/20! relative size-full *:absolute"
-          >
-            <Diamond className="top-0 left-2/3 size-35 -translate-1/2" />
-            <Diamond className="top-0 left-2/3 size-30 -translate-1/2" />
-
-            <Diamond className="top-3/4 -right-5 size-40 translate-x-1/2 -translate-y-1/2" />
-            <Diamond className="top-3/4 -right-5 size-40 translate-x-1/2 -translate-y-1/2 rotate-0" />
-
-            <Diamond className="bottom-5/6 left-0 h-4 w-80 -translate-x-1/2 translate-y-1/2 rotate-0" />
-
-            <Diamond className="bottom-5 left-0 size-50 -translate-x-1/2 translate-y-1/2 rotate-10" />
-          </div>
+            id="main-background"
+            className="absolute size-full scale-105"
+          />
         </div>
 
         <PageEntrance isFirstTime={isFirstTime} />

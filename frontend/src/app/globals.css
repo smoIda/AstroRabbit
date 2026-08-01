@@ -51,6 +51,12 @@
   color: var(--color-ink-soft);
 }
 
+#main-background {
+  background-color: var(--color-white-ink);
+  background-image: url("@/assets/backgrounds/bg-light.svg");
+}
+
+
 body {
   overflow: hidden;
   min-height: 100dvh;
