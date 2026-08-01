@@ -5,9 +5,8 @@ import NewsFlashBB from "next/font/local";
 import { Menu } from "@/components/layout/menu";
 import { QueryProvider } from "@/components/providers/tanstack-provider";
 import { ContentProvider } from "@/components/providers/content-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 
-import "./globals.css";
+import "@/app/globals.css";
 
 export const headline = NewsFlashBB({
   src: "../assets/fonts/news-flash-bb.woff2",
@@ -35,19 +34,35 @@ export default function RootLayout({
         className={`${headline.variable} ${paragraph.variable} flex items-start antialiased`}
       >
         <QueryProvider>
-          <ThemeProvider>
-            <ContentProvider>
-              <Menu />
+          <ContentProvider>
+            <Menu />
 
-              {children}
-            </ContentProvider>
-          </ThemeProvider>
+            {children}
+          </ContentProvider>
         </QueryProvider>
       </body>
     </html>
   );
 }
 
-//----------- IMPORT HIERARCHY -----------//
-// react > next > @fortawesome > @tanstack > @components > @hooks > @lib > ...
+//----------- IMPORT ORDER -----------//
+
+/*
+  "^react$",
+  "",
+  "<BUILTIN_MODULES>",
+  "",
+  "<THIRD_PARTY_MODULES>",
+  "",
+  "^@/app/(.*)$",
+  "",
+  "^@/components/(.*)$",
+  "",
+  "^@/hooks/(.*)$",
+  "",
+  "^@/lib/(.*)$",
+  "",
+  "^[./]"
+*/
+
 // 2/7/2026

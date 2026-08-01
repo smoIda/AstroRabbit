@@ -8,14 +8,10 @@ import {
   IconDefinition,
 } from "@fortawesome/free-regular-svg-icons";
 
-type ThemeProps = "LIGHT" | "DARK";
-
-export type ThemeContextProps = {
-  theme: ThemeProps;
-  setTheme: React.Dispatch<React.SetStateAction<ThemeProps>>;
-};
-
-export const themes: Record<ThemeProps, { id: ThemeProps; icon: IconDefinition }> = {
+export const themes: Record<
+  ThemeProps,
+  { id: ThemeProps; icon: IconDefinition }
+> = {
   LIGHT: { id: "LIGHT", icon: faSun },
   DARK: { id: "DARK", icon: faMoon },
 };
@@ -24,11 +20,14 @@ export const ThemeContext = createContext<ThemeContextProps | undefined>(
   undefined,
 );
 
-export function ThemeProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+type ThemeProps = "LIGHT" | "DARK";
+
+export type ThemeContextProps = {
+  theme: ThemeProps;
+  setTheme: React.Dispatch<React.SetStateAction<ThemeProps>>;
+};
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<ThemeProps>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("THEME");

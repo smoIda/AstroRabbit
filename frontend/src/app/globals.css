@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-ink: #16161a;
@@ -8,19 +7,13 @@
   --color-white-ink: #f7f7f7;
   --color-white-ink-soft: #c2c2c2;
 
-  --color-accent-ink: #a1ab91;
-  --color-accent-ink-soft: #b7beaa;
-}
-
-.dark {
-  --color-ink: #f7f7f7;
-  --color-ink-soft: #c2c2c2;
-
-  --color-white-ink: #16161a;
-  --color-white-ink-soft: #525252;
-
   --color-accent-ink: #d7294f;
   --color-accent-ink-soft: #e04b6c;
+
+  /*
+  OLD
+  --color-accent-ink: #a1ab91;
+  --color-accent-ink-soft: #b7beaa; */
 }
 
 @layer utilities {
@@ -48,15 +41,6 @@
   }
 }
 
-#main-background {
-  background-color: var(--color-white-ink);
-  background-image: url("@/assets/backgrounds/bg-light.svg");
-
-  &.dark {
-    background-image: url("@/assets/backgrounds/bg-dark.svg");
-  }
-}
-
 :where(h1, h2, h3, h4, h5, h6) {
   font-family: var(--font-headline);
   color: var(--color-ink);
@@ -72,17 +56,15 @@ body {
   min-height: 100dvh;
 
   font-family: var(--font-paragraph);
+  font-variant-numeric: tabular-nums;
 
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-color: #16161a;
+  background-color: var(--color-white-ink);
 }
 
 * {
   border-color: var(--color-ink);
-
-  transition-property: color, background-color, border-color, fill, stroke;
-  transition-duration: 100ms;
 }

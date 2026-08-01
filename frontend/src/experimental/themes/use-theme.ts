@@ -1,16 +1,14 @@
-"use client";
-
 import { useContext } from "react";
 
 import {
   ThemeContext,
   ThemeContextProps,
-} from "@/components/providers/theme-provider";
+} from "@/experimental/themes/theme-provider";
 
-export const useTheme = (): ThemeContextProps => {
+export function useTheme(): ThemeContextProps {
   const context = useContext(ThemeContext);
 
   if (!context) throw new Error("useTheme must be inside ThemeProvider");
 
   return context;
-};
+}

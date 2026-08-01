@@ -1,16 +1,56 @@
+"use client"
+
 import React from "react";
 
 import Link from "next/link";
 
-import { BracketGroup } from "@/components/ui/decoration/bracket";
+import { BracketGroup } from "@/components/ui/decorations/bracket";
 
 import { cn } from "@/lib/utils/cn";
+import { cva, type VariantProps } from "@/lib/utils/cva";
 
-type CommonProps = {
+const isExternalLink = (href: string) =>
+  /^(https?:\/\/|\/\/|mailto:|tel:|ftp:|sms:)/.test(href);
+
+const hoverInsetStyles = {
+  sm: "group-hover:inset-px group-active:inset-0.5",
+  md: "group-hover:inset-0.5 group-active:inset-1",
+  lg: "group-hover:inset-0.75 group-active:inset-1.25",
+} as const;
+
+const styles = cva(
+  [
+    "text-ink gap-x-2 relative w-fit inline-flex cursor-pointer items-center justify-center",
+    "disabled:text-ink-soft disabled:cursor-not-allowed",
+  ],
+
+  {
+    variants: {
+      variant: {
+        normal: "group",
+        static: "",
+        "no-brackets": "",
+      },
+
+      size: {
+        sm: "h-8 px-2 text-sm",
+        md: "h-10 px-3 text-base",
+        lg: "h-12 px-4 text-lg",
+        icon: "size-8 text-xl p-0",
+      },
+    },
+
+    defaultVariants: {
+      variant: "normal",
+      size: "sm",
+    },
+  },
+);
+
+type CommonProps = VariantProps<typeof styles> & {
   children: React.ReactNode;
-  variant?: keyof typeof variants;
-  size?: keyof typeof sizes;
   className?: string;
+  hoverInset?: keyof typeof hoverInsetStyles;
 };
 
 type NativeButtonProps = CommonProps &
@@ -33,41 +73,26 @@ type ExternalLinkProps = CommonProps &
 
 type ButtonProps = NativeButtonProps | InternalLinkProps | ExternalLinkProps;
 
-const isExternalLink = (href: string) =>
-  /^(https?:\/\/|\/\/|mailto:|tel:|ftp:|sms:)/.test(href);
-
-const variants = {
-  default: "",
-  "no-brackets": "",
-} as const;
-
-const sizes = {
-  sm: "h-8 px-2 text-sm w-fit",
-  md: "h-10 px-3 text-base w-fit",
-  lg: "h-12 px-4 text-lg w-fit",
-  icon: "size-8 text-xl p-0",
-} as const;
-
 function getSharedProps<T extends ButtonProps>(props: T) {
-  const {
-    children,
-    variant = "default",
-    size = "sm",
-    className,
-    ...rest
-  } = props;
+  const { children, variant, size, hoverInset, className, ...rest } = props;
 
-  const classes = cn(
-    "text-ink gap-x-2 disabled:text-ink-soft relative inline-flex cursor-pointer items-center justify-center disabled:cursor-not-allowed",
-    sizes[size],
-    variants[variant],
-    className,
-  );
+  const safeSize = !size || size === "icon" ? "sm" : size;
+
+  const classes = cn(styles({ variant, size, className }));
 
   const content = (
     <>
       {children}
-      <BracketGroup />
+      {variant !== "no-brackets" && (
+        <div
+          className={cn(
+            "absolute inset-0 transition-[inset] duration-100",
+            hoverInsetStyles[hoverInset ?? safeSize],
+          )}
+        >
+          <BracketGroup size={safeSize} />
+        </div>
+      )}
     </>
   );
 

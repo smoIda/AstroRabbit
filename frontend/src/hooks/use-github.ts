@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { QUERY_KEYS } from "@/hooks/constants";
+import { QUERY_KEYS } from "@/hooks/config";
 
 import { getStar } from "@/lib/api/github";
 

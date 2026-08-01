@@ -1,38 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { TransitionRouter } from "next-transition-router";
 import { usePathname } from "next/navigation";
 
-import Parallax from "parallax-js";
+import { links } from "@/components/config";
+import { Bracket } from "@/components/ui/decorations/bracket";
+import { Button } from "@/components/ui/primitives/button";
+import { Diamond } from "@/components/ui/decorations/diamond";
+import { PageEntrance } from "@/components/transitions/page-entrance";
 
-import { Bracket } from "@/components/ui/decoration/bracket";
+import { useParallax } from "@/hooks/use-parallax";
 
-import { useTheme } from "@/hooks/use-theme";
-
-import { gsap, useGSAP } from "@/lib/anims/plugins";
-
-type LinkProps = {
-  id: "ASTRO RABBIT" | "DOCS";
-  path: "/" | "/docs";
-};
-
-const links: LinkProps[] = [
-  {
-    id: "ASTRO RABBIT",
-    path: "/",
-  },
-
-  {
-    id: "DOCS",
-    path: "/docs",
-  },
-] as const;
+import { gsap } from "@/lib/anims/plugins";
 
 export function ContentProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(() => {
+  const path = usePathname();
+  const scope = useParallax(mounted)
+
+  const [isFirstTime] = useState(() => {
     if (typeof window !== "undefined") {
       const stored = sessionStorage.getItem("IS_FIRST_TIME");
 
@@ -41,83 +29,11 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
 
     return true;
   });
-  const bgRef = useRef<HTMLDivElement | null>(null);
-  const { theme } = useTheme();
-  const path = usePathname();
-
-  useGSAP(() => {
-    if (!isFirstTime || !mounted) {
-      gsap.set("#main-intro", { autoAlpha: 0 });
-
-      return;
-    }
-
-    gsap
-      .timeline({ defaults: { ease: "power4.inOut" } })
-      .fromTo(
-        "#main-intro-left",
-        { xPercent: 0, yPercent: 0 },
-        { xPercent: -4, yPercent: -2, duration: 0.5 },
-      )
-      .fromTo(
-        "#main-intro-right",
-        { xPercent: 0, yPercent: 0 },
-        { xPercent: 4, yPercent: 2, duration: 0.5 },
-        "<",
-      )
-      .to(
-        "#main-intro-left",
-        {
-          xPercent: -140,
-          yPercent: -70,
-          duration: 1.4,
-          ease: "expo.inOut",
-        },
-        ">0.2",
-      )
-      .to(
-        "#main-intro-right",
-        {
-          xPercent: 140,
-          yPercent: 70,
-          duration: 1.4,
-          ease: "expo.inOut",
-        },
-        "<",
-      )
-      .from(
-        ".header-link, .header-menu-item",
-        {
-          autoAlpha: 0,
-          y: 10,
-          stagger: 0.06,
-          duration: 0.6,
-          ease: "power3.out",
-        },
-        ">-0.4",
-      );
-  }, [mounted]);
-
-  useEffect(() => {
-    if (!bgRef.current) return;
-
-    const p = new Parallax(bgRef.current);
-
-    return () => p.destroy();
-  }, [mounted]);
 
   useEffect(() => {
     setMounted(true);
 
     setTimeout(() => sessionStorage.setItem("IS_FIRST_TIME", "false"), 0);
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === "IS_FIRST_TIME") setIsFirstTime(e.newValue === null);
-    };
-
-    window.addEventListener("storage", handleStorage);
-
-    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   if (!mounted) return null;
@@ -156,60 +72,63 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
         return () => tween.kill();
       }}
     >
-      <main
-        id="main"
-        className={`relative h-dvh w-screen overflow-hidden ${theme === "DARK" && "dark"}`}
-      >
+      <main id="main" className="relative h-dvh w-screen overflow-hidden">
         <div
           id="main-border"
           className="pointer-events-none absolute inset-4 z-50 border-2 border-b-0 select-none"
         >
-          <div className="absolute inset-1">
-            <Bracket color="accent" size="xl" />
-            <Bracket color="accent" size="xl" position="bottom-right" />
-          </div>
-
-          <div className="*:not-[.font-headline,.diamond]:bg-ink absolute -bottom-0.5 -left-0.5 flex h-0.5 w-[calc(100%+4px)] items-center justify-between">
-            <span className="h-0.5 w-full" />
-            <span className="diamond size-2 shrink-0 rotate-45 border-2" />
-
-            <span className="font-headline shrink-0 px-4 text-2xl tracking-[0.04em]!">
-              {links.find((link) => link.path === path)?.id}
-            </span>
-
-            <span className="diamond size-2 shrink-0 rotate-45 border-2" />
-            <span className="h-0.5 w-full" />
-          </div>
-        </div>
-
-        <div ref={bgRef} className="pointer-events-none absolute inset-0">
-          <div
-            data-depth="0.12"
-            id="main-background"
-            className={`absolute size-full scale-105 ${theme === "DARK" && "dark"}`}
+          <Bracket color="accent" className="top-1 left-1 size-15" />
+          <Bracket
+            color="accent"
+            className="right-1 bottom-1 size-15"
+            position="bottom-right"
           />
+
+          <div className="*:not-[.font-headline,.diamond]:bg-ink absolute -bottom-0.5 -left-0.5 z-60 flex h-0.5 w-[calc(100%+4px)] items-center justify-between">
+            <span className="h-0.5 w-full" />
+            <Diamond />
+
+            <Button
+              variant="no-brackets"
+              href={path.startsWith("/projects/") ? "/projects" : "/"}
+              className="font-headline pointer-events-auto shrink-0 cursor-pointer px-4 text-2xl tracking-[0.04em]! transition-[padding] hover:px-2 active:px-2"
+            >
+              {path.startsWith("/projects/") ? (
+                <span>PROJECT NAME</span>
+              ) : (
+                links.find((link) => link.path === path)?.id
+              )}
+            </Button>
+
+            <Diamond />
+            <span className="h-0.5 w-full" />
+          </div>
         </div>
+
+        {/* parallax.js targets their data-depth elements with left: 0px;
+top: 0px, so wrapping the square in another div fixes top/left/bottom/right not workign */}
 
         <div
-          id="main-intro"
-          className="pointer-events-none fixed z-60 size-full"
+          ref={scope}
+          className="pointer-events-none absolute z-60 size-full"
         >
-          <span
-            id="main-intro-right"
-            style={{
-              clipPath: "polygon(100% 0%, 0% 100%, 100% 100%)",
-            }}
-            className="bg-ink pointer-events-auto absolute size-full"
-          />
+          <div
+            data-depth="0.08"
+            className="*:border-ink-soft/20! relative size-full *:absolute"
+          >
+            <Diamond className="top-0 left-2/3 size-35 -translate-1/2" />
+            <Diamond className="top-0 left-2/3 size-30 -translate-1/2" />
 
-          <span
-            id="main-intro-left"
-            style={{
-              clipPath: "polygon(100% 0%, 0% 100%, 0% 0%)",
-            }}
-            className="bg-ink pointer-events-auto absolute size-full"
-          />
+            <Diamond className="top-3/4 -right-5 size-40 translate-x-1/2 -translate-y-1/2" />
+            <Diamond className="top-3/4 -right-5 size-40 translate-x-1/2 -translate-y-1/2 rotate-0" />
+
+            <Diamond className="bottom-5/6 left-0 h-4 w-80 -translate-x-1/2 translate-y-1/2 rotate-0" />
+
+            <Diamond className="bottom-5 left-0 size-50 -translate-x-1/2 translate-y-1/2 rotate-10" />
+          </div>
         </div>
+
+        <PageEntrance isFirstTime={isFirstTime} />
 
         {children}
       </main>
