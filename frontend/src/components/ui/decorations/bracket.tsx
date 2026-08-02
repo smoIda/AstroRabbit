@@ -31,7 +31,7 @@ const styles = cva("pointer-events-none absolute select-none", {
   },
 });
 
-type BracketProps = React.HTMLAttributes<HTMLElement> &
+type BracketProps = Omit<React.HTMLAttributes<HTMLElement>, "children"> &
   VariantProps<typeof styles>;
 
 type BracketGroupProps = Omit<BracketProps, "position">;

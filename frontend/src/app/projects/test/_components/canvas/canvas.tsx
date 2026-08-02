@@ -3,20 +3,22 @@
 import { useCallback } from "react";
 
 import {
-  EditorNodeProps,
-  nodeTypes,
-} from "@/app/projects/test/_components/canvas/config";
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
-import "@/app/projects/test/_components/canvas/config.css";
-
-import {
   Connection,
+  ConnectionMode,
   Edge,
   EdgeChange,
   NodeChange,
   ReactFlow,
   SelectionMode,
 } from "@xyflow/react";
+
+import {
+  edgeTypes,
+  EditorNodeProps,
+  nodeTypes,
+} from "@/app/projects/test/_components/canvas/config";
+import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import "@/app/projects/test/_components/canvas/config.css";
 
 export function Canvas() {
   const { state, dispatch } = useEditor();
@@ -56,6 +58,7 @@ export function Canvas() {
         onNodesChange={onNodesChange}
 
         edges={state.edges}
+        edgeTypes={edgeTypes}
         onEdgesChange={onEdgesChange}
 
         onConnect={onConnect}
@@ -64,6 +67,7 @@ export function Canvas() {
         selectionOnDrag
         panOnDrag={false}
         selectionMode={SelectionMode.Partial}
+        connectionMode={ConnectionMode.Strict}
 
         fitView
         proOptions={{ hideAttribution: true }}

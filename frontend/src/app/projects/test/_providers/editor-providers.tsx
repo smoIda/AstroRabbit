@@ -2,7 +2,7 @@
 
 import { createContext, useMemo, useReducer } from "react";
 
-import { LucideIcon } from "lucide-react";
+import { Database, Globe, LucideIcon } from "lucide-react";
 
 import {
   addEdge,
@@ -38,6 +38,7 @@ export const InitialEditor: InitialEditorProps = {
       data: {
         category: "HTTP Request",
         label: "User",
+        icon: Globe,
         method: "GET",
         endpoint: "/getdata",
       },
@@ -50,6 +51,7 @@ export const InitialEditor: InitialEditorProps = {
       data: {
         category: "Database",
         label: "/users",
+        icon: Database,
         database: "MongoDB",
       },
     },
@@ -69,7 +71,7 @@ export const ActionEditor = (
       return { ...state, nodes: [...state.nodes, action.payload] };
 
     case "CREATE_EDGE":
-      return { ...state, edges: addEdge(action.payload, state.edges) };
+      return { ...state, edges: addEdge({...action.payload, type: "SHARP"}, state.edges) };
 
     case "CHANGE_NODE":
       return {

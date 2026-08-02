@@ -1,14 +1,2 @@
-@import url("@xyflow/react/dist/style.css");
+@import "@xyflow/react/dist/style.css" layer(base);
 @import "tailwindcss";
-
-@import "../../../../globals.css";
-
-@layer components {
-  .react-flow__selection {
-    @apply border-accent-ink! bg-accent-ink/10;
-  }
-
-  .react-flow__controls {
-    @apply border-ink rounded-none border-2 shadow-none;
-  }
-}

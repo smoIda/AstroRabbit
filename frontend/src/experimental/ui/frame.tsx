@@ -11,10 +11,20 @@ const styles = cva("relative", {
       accent: "stroke-accent-ink",
       "accent-soft": "stroke-accent-ink-soft",
     },
+
+    fillColor: {
+      black: "fill-ink",
+      "black-soft": "fill-ink-soft",
+      white: "fill-white-ink",
+      "white-soft": "fill-white-ink-soft",
+      accent: "fill-accent-ink",
+      "accent-soft": "fill-accent-ink-soft",
+    }
   },
 
   defaultVariants: {
     strokeColor: "black",
+    fillColor: "white"
   },
 });
 
@@ -28,8 +38,9 @@ export function Frame(props: FrameProps) {
   const {
     children,
     chamferSize = 10,
-    strokeWidth = 1,
+    strokeWidth = 4,
     strokeColor,
+    fillColor,
     className,
     ...elProps
   } = props;
@@ -37,7 +48,7 @@ export function Frame(props: FrameProps) {
   return (
     <div className={cn(styles({ className }))} {...elProps}>
       <svg
-        className="pointer-events-none absolute size-full"
+        className="pointer-events-none inset-0 absolute size-full"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
       >
@@ -51,7 +62,8 @@ export function Frame(props: FrameProps) {
         L 0 ${chamferSize}
         Z
       `}
-          className={`fill-none ${styles({ strokeColor })}`}
+          vectorEffect="non-scaling-stroke"
+          className={styles({ strokeColor, fillColor })}
           strokeWidth={strokeWidth}
         />
       </svg>
