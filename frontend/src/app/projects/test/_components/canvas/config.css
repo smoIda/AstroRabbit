@@ -1,2 +1,19 @@
 @import "@xyflow/react/dist/style.css" layer(base);
 @import "tailwindcss";
+@import "../../../../globals.css";
+
+.react-flow__pane {
+  cursor: default;
+}
+
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.react-flow__node {
+  cursor: grab;
+}
+
+.react-flow__node:active {
+  cursor: grabbing;
+}

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useRef } from "react";
 
@@ -107,12 +107,12 @@ export function Section({
     <section
       ref={ref}
       className={cn(
-        "pointer-events-auto! relative size-full px-4 py-18",
+        "pointer-events-auto! relative size-full px-8 py-18",
         className,
       )}
       {...props}
     >
-      <div ref={scope} data-depth="0.12" className="size-full px-4">
+      <div ref={scope} data-depth="0.12" className="size-full">
         {children}
       </div>
     </section>

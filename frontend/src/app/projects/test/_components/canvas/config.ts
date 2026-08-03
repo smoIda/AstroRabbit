@@ -6,16 +6,16 @@ import { RequestNode } from "@/app/projects/test/_components/canvas/nodes/reques
 import { DatabaseNode } from "@/app/projects/test/_components/canvas/nodes/database-node";
 import { SharpEdge } from "@/app/projects/test/_components/canvas/edges/custom-edge";
 
-export const nodeTypes: NodeTypes = {
-  REQUEST: RequestNode,
-  DATABASE: DatabaseNode,
+
+
+export type BaseNodeData = {
+  type: string;
+  label: string;
+  icon: LucideIcon;
 };
 
 export type RequestNodeProps = Node<
-  {
-    category: string;
-    label: string;
-    icon: LucideIcon;
+  BaseNodeData & {
     method: "GET" | "POST";
     endpoint: string;
   },
@@ -23,10 +23,7 @@ export type RequestNodeProps = Node<
 >;
 
 export type DatabaseNodeProps = Node<
-  {
-    category: string;
-    label: string;
-    icon: LucideIcon;
+  BaseNodeData & {
     database: string;
     latency?: number;
   },
@@ -34,6 +31,11 @@ export type DatabaseNodeProps = Node<
 >;
 
 export type EditorNodeProps = RequestNodeProps | DatabaseNodeProps;
+
+export const nodeTypes: NodeTypes = {
+  REQUEST: RequestNode,
+  DATABASE: DatabaseNode,
+};
 
 export const edgeTypes: EdgeTypes = {
   SHARP: SharpEdge,

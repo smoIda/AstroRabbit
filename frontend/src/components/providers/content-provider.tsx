@@ -118,7 +118,7 @@ top: 0px, so wrapping the square in another div fixes top/left/bottom/right not 
 
         <div
           style={{
-            boxShadow: "inset 0 0 40px 20px rgb(194, 194, 194)",
+            boxShadow: "inset 0 0 40px 20px rgb(194, 194, 194, 0.6)",
           }}
           className="pointer-events-none fixed inset-0 z-49"
         />

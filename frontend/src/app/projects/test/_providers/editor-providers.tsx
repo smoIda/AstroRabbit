@@ -15,6 +15,9 @@ import {
 } from "@xyflow/react";
 
 import { EditorNodeProps } from "@/app/projects/test/_components/canvas/config";
+import { getConnectionHandles } from "@/app/projects/test/_utils/get-connection-handles";
+import { updateEdgeHandles } from "@/app/projects/test/_utils/update-edge-handles";
+import { nanoid } from "nanoid";
 
 export const EditorContext = createContext<EditorContextProps | undefined>(
   undefined,
@@ -36,7 +39,7 @@ export const InitialEditor: InitialEditorProps = {
         y: 100,
       },
       data: {
-        category: "HTTP Request",
+        type: "HTTP Request",
         label: "User",
         icon: Globe,
         method: "GET",
@@ -49,7 +52,7 @@ export const InitialEditor: InitialEditorProps = {
       type: "DATABASE",
       position: { x: 150, y: 300 },
       data: {
-        category: "Database",
+        type: "Database",
         label: "/users",
         icon: Database,
         database: "MongoDB",
@@ -65,19 +68,69 @@ export const ActionEditor = (
 ): InitialEditorProps => {
   switch (action.type) {
     case "SELECT_TOOL":
-      return { ...state, tool: action.payload };
-
-    case "CREATE_NODE":
-      return { ...state, nodes: [...state.nodes, action.payload] };
-
-    case "CREATE_EDGE":
-      return { ...state, edges: addEdge({...action.payload, type: "SHARP"}, state.edges) };
-
-    case "CHANGE_NODE":
       return {
         ...state,
-        nodes: applyNodeChanges<EditorNodeProps>(action.payload, state.nodes),
+        tool: action.payload,
       };
+
+    case "CREATE_NODE":
+      return {
+        ...state,
+        nodes: [...state.nodes, action.payload],
+      };
+
+    case "CREATE_EDGE": {
+      const source = state.nodes.find(
+        (node) => node.id === action.payload.source,
+      );
+
+      const target = state.nodes.find(
+        (node) => node.id === action.payload.target,
+      );
+
+      if (!source || !target) {
+        return state;
+      }
+
+      const handles = getConnectionHandles(source, target);
+
+      const edge: Edge = {
+        id: crypto.randomUUID(),
+        ...action.payload,
+        type: "SHARP",
+        sourceHandle: handles.sourceHandle,
+        targetHandle: handles.targetHandle,
+      };
+
+      return {
+        ...state,
+        edges: addEdge(edge, state.edges),
+      };
+    }
+
+    case "CHANGE_NODE": {
+      const nodes = applyNodeChanges<EditorNodeProps>(
+        action.payload,
+        state.nodes,
+      );
+
+      const positionChanged = action.payload.some(
+        (change) => change.type === "position",
+      );
+
+      if (!positionChanged) {
+        return {
+          ...state,
+          nodes,
+        };
+      }
+
+      return {
+        ...state,
+        nodes,
+        edges: updateEdgeHandles(nodes, state.edges),
+      };
+    }
 
     case "CHANGE_EDGE":
       return {

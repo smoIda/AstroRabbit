@@ -32,7 +32,7 @@ export default function Toolbox() {
   const { state, dispatch } = useEditor();
 
   return (
-    <aside className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-2">
+    <aside className="absolute top-8 left-1/2 z-60 flex -translate-x-1/2 items-center justify-center gap-x-4">
       {toolboxItems.map((item) => {
         const Icon = item.icon;
 
@@ -44,7 +44,7 @@ export default function Toolbox() {
             aria-label={item.id}
           >
             <Icon size={20} />
-
+            {/* 
             <span
               className={cn(
                 "text-ink-soft absolute -right-2 -bottom-1 text-[8px]",
@@ -52,7 +52,7 @@ export default function Toolbox() {
               )}
             >
               {item.keybind}
-            </span>
+            </span> */}
           </Button>
         );
       })}

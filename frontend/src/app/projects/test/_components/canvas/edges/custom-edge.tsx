@@ -24,5 +24,3 @@ export function SharpEdge({
 
   return <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />;
 }
-
-// https://dribbble.com/shots/21180458-Dataviser-node-system-tool

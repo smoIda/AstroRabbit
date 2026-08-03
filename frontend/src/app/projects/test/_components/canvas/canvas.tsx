@@ -24,34 +24,37 @@ export function Canvas() {
   const { state, dispatch } = useEditor();
 
   const onNodesChange = useCallback(
-    (changes: NodeChange<EditorNodeProps>[]) =>
+    (changes: NodeChange<EditorNodeProps>[]) => {
       dispatch({
         type: "CHANGE_NODE",
         payload: changes,
-      }),
+      });
+    },
     [dispatch],
   );
 
   const onEdgesChange = useCallback(
-    (changes: EdgeChange<Edge>[]) =>
+    (changes: EdgeChange<Edge>[]) => {
       dispatch({
         type: "CHANGE_EDGE",
         payload: changes,
-      }),
+      });
+    },
     [dispatch],
   );
 
   const onConnect = useCallback(
-    (connection: Connection) =>
+    (connection: Connection) => {
       dispatch({
         type: "CREATE_EDGE",
         payload: connection,
-      }),
+      });
+    },
     [dispatch],
   );
 
   return (
-    <div className="absolute inset-0 p-0">
+    <div className="size-full p-0">
       <ReactFlow
         nodes={state.nodes}
         nodeTypes={nodeTypes}
@@ -66,8 +69,9 @@ export function Canvas() {
         panOnScroll
         selectionOnDrag
         panOnDrag={false}
+
         selectionMode={SelectionMode.Partial}
-        connectionMode={ConnectionMode.Strict}
+        connectionMode={ConnectionMode.Loose}
 
         fitView
         proOptions={{ hideAttribution: true }}
