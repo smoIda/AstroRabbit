@@ -28,7 +28,7 @@ export function Shadow(props: ShadowProps) {
   const {
     color,
     scale = 1.05,
-    opacity = 0.4,
+    opacity = 60,
     style,
     className,
     ...shadowProps
@@ -40,7 +40,7 @@ export function Shadow(props: ShadowProps) {
         {
           ...style,
           "--shadow-scale": scale,
-          "--shadow-opacity": opacity,
+          "--shadow-opacity": opacity / 100,
         } as React.CSSProperties
       }
       className={cn(

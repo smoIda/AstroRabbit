@@ -6,8 +6,6 @@ import { RequestNode } from "@/app/projects/test/_components/canvas/nodes/reques
 import { DatabaseNode } from "@/app/projects/test/_components/canvas/nodes/database-node";
 import { SharpEdge } from "@/app/projects/test/_components/canvas/edges/custom-edge";
 
-
-
 export type BaseNodeData = {
   type: string;
   label: string;

@@ -1,15 +1,10 @@
 import { NodeProps, NodeToolbar, Position } from "@xyflow/react";
 
-import {
-  BaseNodeData,
-  EditorNodeProps,
-} from "@/app/projects/test/_components/canvas/config";
+import { EditorNodeProps } from "@/app/projects/test/_components/canvas/config";
 import Properties from "@/app/projects/test/_components/properties";
 
 import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
-
-import { cn } from "@/lib/utils/cn";
 
 type BaseNodeProps = NodeProps<EditorNodeProps> & {
   children: React.ReactNode;
@@ -23,7 +18,7 @@ export function BaseNode(props: BaseNodeProps) {
       <NodeToolbar
         isVisible={props.selected}
         position={Position.Right}
-        offset={16}
+        offset={32}
       >
         <Properties
           id={props.id}
@@ -33,12 +28,7 @@ export function BaseNode(props: BaseNodeProps) {
         />
       </NodeToolbar>
 
-      <div
-        className={cn(
-          "relative flex size-25 items-center justify-center",
-          props.selected && "border-2 border-dashed",
-        )}
-      >
+      <div className="relative flex size-25 items-center justify-center">
         <Icon className="stroke-ink-soft size-2/5" />
 
         {props.children}
@@ -48,7 +38,7 @@ export function BaseNode(props: BaseNodeProps) {
           variant="filled"
         />
 
-        <Shadow className="size-20 rotate-45" scale={1} />
+        {props.selected && <Shadow className="size-20 rotate-45" scale={1} />}
       </div>
     </>
   );

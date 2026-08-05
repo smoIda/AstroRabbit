@@ -2,7 +2,7 @@
 
 import { createContext, useMemo, useReducer } from "react";
 
-import { Database, Globe, LucideIcon } from "lucide-react";
+import { Database, Globe } from "lucide-react";
 
 import {
   addEdge,
@@ -14,10 +14,11 @@ import {
   NodeChange,
 } from "@xyflow/react";
 
+import { ToolboxItemProps } from "@/app/projects/test/_components/toolbox";
+import { ToolbarItemProps } from "@/app/projects/test/_components/toolbar";
 import { EditorNodeProps } from "@/app/projects/test/_components/canvas/config";
 import { getConnectionHandles } from "@/app/projects/test/_utils/get-connection-handles";
 import { updateEdgeHandles } from "@/app/projects/test/_utils/update-edge-handles";
-import { nanoid } from "nanoid";
 
 export const EditorContext = createContext<EditorContextProps | undefined>(
   undefined,
@@ -60,6 +61,7 @@ export const InitialEditor: InitialEditorProps = {
     },
   ],
   edges: [],
+  state: "IDLE",
 };
 
 export const ActionEditor = (
@@ -143,16 +145,11 @@ export const ActionEditor = (
   }
 };
 
-export type ToolboxItemProps = {
-  id: "SELECT" | "INSERT" | "IDK";
-  icon: LucideIcon;
-  keybind: "V";
-};
-
 type InitialEditorProps = {
   nodes: EditorNodeProps[];
   edges: Edge[];
   tool: ToolboxItemProps["id"];
+  state: "IDLE" | "RUNNING" | "SUCCESS" | "ERROR";
 };
 
 type ActionEditorProps =

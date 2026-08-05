@@ -1,12 +1,10 @@
 "use client";
 
-import { MousePointer2, Plus } from "lucide-react";
+import { LucideIcon, MousePointer2, Plus } from "lucide-react";
 
-import { ToolboxItemProps } from "@/app/projects/test/_providers/editor-providers";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
 import { Button } from "@/components/ui/primitives/button";
-import { cn } from "@/lib/utils/cn";
 
 const toolboxItems: ToolboxItemProps[] = [
   {
@@ -28,11 +26,17 @@ const toolboxItems: ToolboxItemProps[] = [
   },
 ] as const;
 
+export type ToolboxItemProps = {
+  id: "SELECT" | "INSERT" | "IDK";
+  icon: LucideIcon;
+  keybind: "V";
+};
+
 export default function Toolbox() {
   const { state, dispatch } = useEditor();
 
   return (
-    <aside className="absolute top-8 left-1/2 z-60 flex -translate-x-1/2 items-center justify-center gap-x-4">
+    <div className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-4">
       {toolboxItems.map((item) => {
         const Icon = item.icon;
 
@@ -56,6 +60,6 @@ export default function Toolbox() {
           </Button>
         );
       })}
-    </aside>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Canvas } from "@/app/projects/test/_components/canvas/canvas";
-import Properties from "@/app/projects/test/_components/properties";
+import Toolbar from "@/app/projects/test/_components/toolbar";
 import Toolbox from "@/app/projects/test/_components/toolbox";
-import { EditorProvider } from "@/app/projects/test/_providers/editor-providers";
+import { EditorProvider } from "@/app/projects/test/_providers/editor-provider";
 
 import { Section } from "@/components/layout/section";
 
@@ -15,6 +15,8 @@ export default async function ProjectId({ params }: PageProps) {
   return (
     <EditorProvider>
       <Section className="flex items-center justify-center p-0">
+        <Toolbar />
+
         <Toolbox />
 
         <Canvas />
