@@ -1,12 +1,12 @@
 "use client";
 
-import { BaseNodeData } from "@/app/projects/test/_components/canvas/config";
+import { Base } from "@/app/projects/test/_components/canvas/nodes/config";
 
 import { Shadow } from "@/components/ui/decorations/shadow";
 
 type PropertiesProps = {
   id: string;
-  data: BaseNodeData;
+  data: Base;
   x: number;
   y: number;
 };
@@ -17,7 +17,7 @@ export default function Properties(props: PropertiesProps) {
       <div className="relative flex size-full flex-col gap-y-4 p-4">
         <div>
           <p className="text-sm font-bold">PROPERTIES</p>
-          <p className="text-ink-soft text-xs">{props.data.type}</p>
+          <p className="text-ink-soft text-xs">{props.data.label}</p>
         </div>
 
         <div>

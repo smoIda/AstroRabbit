@@ -1,6 +1,10 @@
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 
-export function SharpEdge({
+import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
+import { cn } from "@/lib/utils/cn";
+
+export function CustomEdge({
   id,
   sourceX,
   sourceY,
@@ -9,7 +13,6 @@ export function SharpEdge({
   sourcePosition,
   targetPosition,
   markerEnd,
-  style,
 }: EdgeProps) {
   const [edgePath] = getSmoothStepPath({
     sourceX,
@@ -22,5 +25,19 @@ export function SharpEdge({
     offset: 20,
   });
 
-  return <BaseEdge id={id} path={edgePath} markerEnd={markerEnd} style={style} />;
+  const { state } = useEditor();
+  const { edgeStatus } = useExecutor();
+
+  return (
+    <BaseEdge
+      className={cn(
+        "stroke-ink-soft",
+        edgeStatus[id] === "RUNNING" && "stroke-green-300",
+        edgeStatus[id] === "FINISHED" && "stroke-accent-ink",
+      )}
+      id={id}
+      path={edgePath}
+      markerEnd={markerEnd}
+    />
+  );
 }

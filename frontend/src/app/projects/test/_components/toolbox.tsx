@@ -1,6 +1,8 @@
 "use client";
 
-import { LucideIcon, MousePointer2, Plus } from "lucide-react";
+import { useEffect } from "react";
+
+import { Globe, LucideIcon, MousePointer2, Plus } from "lucide-react";
 
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
@@ -32,8 +34,37 @@ export type ToolboxItemProps = {
   keybind: "V";
 };
 
+export type CreateNodeProps<T> = T extends unknown ? Omit<T, "id"> : never;
+
 export default function Toolbox() {
   const { state, dispatch } = useEditor();
+
+  useEffect(() => {
+    const handleInsert = (e: KeyboardEvent) => {
+      if (e.key === "E")
+        dispatch({
+          type: "CREATE_NODE",
+          payload: {
+            type: "HTTP_REQUEST",
+            position: {
+              x: 10,
+              y: 10,
+            },
+            data: {
+              label: "User",
+              icon: Globe,
+              duration: 0,
+              method: "GET",
+              endpoint: "/getdata",
+            },
+          },
+        });
+    };
+
+    window.addEventListener("keydown", handleInsert);
+
+    return () => window.removeEventListener("keydown", handleInsert);
+  }, []);
 
   return (
     <div className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-4">

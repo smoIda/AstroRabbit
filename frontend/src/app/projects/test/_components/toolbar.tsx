@@ -1,11 +1,13 @@
 "use client";
 
-import { LucideIcon, Play, Redo, Undo } from "lucide-react";
+import { LucideIcon, Play, Redo, Square, Undo } from "lucide-react";
 
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 
 import { Button } from "@/components/ui/primitives/button";
-import { executeProgram } from "@/app/projects/test/_engine/executor";
+
+import { ExecutionRequest } from "@/lib/api/executor";
 
 const toolboxItems: ToolbarItemProps[] = [
   {
@@ -13,19 +15,17 @@ const toolboxItems: ToolbarItemProps[] = [
     icon: Play,
     keybind: "V",
   },
-
   {
     id: "REDO",
     icon: Redo,
     keybind: "CTRL+Y",
   },
-
   {
     id: "UNDO",
     icon: Undo,
     keybind: "CTRL+Z",
   },
-] as const;
+];
 
 export type ToolbarItemProps = {
   id: "RUN" | "REDO" | "UNDO";
@@ -34,29 +34,38 @@ export type ToolbarItemProps = {
 };
 
 export default function Toolbar() {
+  const { mutate, cancel, executionId, executionStatus } = useExecutor();
   const { state, dispatch } = useEditor();
 
-  async function handleExecute() {
-    try {
-      const result = await executeProgram(state.nodes, state.edges);
+  const execute = () => {
+    const request: ExecutionRequest = {
+      nodes: state.nodes,
+      edges: state.edges,
+      startAt: "1",
+    };
 
-      alert(JSON.stringify(result, null, 2));
-    } catch (err) {
-      alert("err");
-    }
-  }
+    console.log(request)
+    mutate(request);
+  };
+
+  const stop = () => {
+    if (!executionId) return;
+
+    cancel.mutate({ executionId });
+  };
 
   return (
     <div className="absolute top-8 right-8 z-60 flex flex-row-reverse items-center justify-center gap-x-4">
       {toolboxItems.map((item) => {
-        const Icon = item.icon;
+        const Icon = executionStatus !== "RUNNING" ? item.icon : Square;
 
         return (
           <Button
-            onClick={handleExecute}
+            onClick={executionStatus === "RUNNING" ? stop : execute}
             key={item.id}
             size="icon"
             aria-label={item.id}
+            className={`${executionStatus === "RUNNING" && "text-accent-ink"}`}
           >
             <Icon size={20} />
           </Button>

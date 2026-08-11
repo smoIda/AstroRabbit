@@ -13,18 +13,20 @@ import {
 } from "@xyflow/react";
 
 import {
-  edgeTypes,
-  EditorNodeProps,
+  NodeData,
   nodeTypes,
-} from "@/app/projects/test/_components/canvas/config";
+} from "@/app/projects/test/_components/canvas/nodes/config";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import { edgeTypes } from "@/app/projects/test/_components/canvas/edges/config";
+import { CustomConnectionLine } from "@/app/projects/test/_components/canvas/edges/connection-line";
+
 import "@/app/projects/test/_components/canvas/config.css";
 
 export function Canvas() {
   const { state, dispatch } = useEditor();
 
   const onNodesChange = useCallback(
-    (changes: NodeChange<EditorNodeProps>[]) => {
+    (changes: NodeChange<NodeData>[]) => {
       dispatch({
         type: "CHANGE_NODE",
         payload: changes,
@@ -65,13 +67,14 @@ export function Canvas() {
         onEdgesChange={onEdgesChange}
 
         onConnect={onConnect}
+        connectionLineComponent={CustomConnectionLine}
 
         panOnScroll
         selectionOnDrag
         panOnDrag={false}
 
         selectionMode={SelectionMode.Partial}
-        connectionMode={ConnectionMode.Loose}
+        connectionMode={ConnectionMode.Strict}
 
         fitView
         proOptions={{ hideAttribution: true }}

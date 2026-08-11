@@ -1,17 +1,17 @@
 import { NodeProps } from "@xyflow/react";
 
-import { Database } from "@/app/projects/test/_components/canvas/nodes/config";
+import { HttpRequest } from "@/app/projects/test/_components/canvas/nodes/config";
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/base-node";
 import { BaseHandle } from "@/app/projects/test/_components/canvas/nodes/base/base-handle";
 
-export function DatabaseNode(node: NodeProps<Database>) {
+export function HttpRequestNode(node: NodeProps<HttpRequest>) {
   return (
     <BaseNode {...node}>
       <BaseHandle
         positions={{
           top: ["target"],
           right: ["target"],
-          bottom: ["target"],
+          bottom: ["source"],
           left: ["target"],
         }}
       />

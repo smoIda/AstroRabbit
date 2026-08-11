@@ -4,6 +4,8 @@ import { createContext, useMemo, useReducer } from "react";
 
 import { Database, Globe } from "lucide-react";
 
+import { nanoid } from "nanoid";
+
 import {
   addEdge,
   applyEdgeChanges,
@@ -14,11 +16,11 @@ import {
   NodeChange,
 } from "@xyflow/react";
 
-import { ToolboxItemProps } from "@/app/projects/test/_components/toolbox";
-import { ToolbarItemProps } from "@/app/projects/test/_components/toolbar";
-import { EditorNodeProps } from "@/app/projects/test/_components/canvas/config";
-import { getConnectionHandles } from "@/app/projects/test/_utils/get-connection-handles";
-import { updateEdgeHandles } from "@/app/projects/test/_utils/update-edge-handles";
+import {
+  CreateNodeProps,
+  ToolboxItemProps,
+} from "@/app/projects/test/_components/toolbox";
+import { NodeData } from "@/app/projects/test/_components/canvas/nodes/config";
 
 export const EditorContext = createContext<EditorContextProps | undefined>(
   undefined,
@@ -34,34 +36,40 @@ export const InitialEditor: InitialEditorProps = {
   nodes: [
     {
       id: "1",
-      type: "REQUEST",
+      type: "HTTP_REQUEST",
       position: {
         x: 100,
         y: 100,
       },
       data: {
-        type: "HTTP Request",
         label: "User",
         icon: Globe,
+        duration: 0,
+
         method: "GET",
-        endpoint: "/getdata",
+        url: "/users",
+        headers: {},
+        body: "Hello world from hee hee",
       },
     },
 
     {
       id: "2",
       type: "DATABASE",
-      position: { x: 150, y: 300 },
+      position: {
+        x: 150,
+        y: 300,
+      },
       data: {
-        type: "Database",
         label: "/users",
         icon: Database,
+        duration: 0,
+
         database: "MongoDB",
       },
     },
   ],
   edges: [],
-  state: "IDLE",
 };
 
 export const ActionEditor = (
@@ -78,30 +86,20 @@ export const ActionEditor = (
     case "CREATE_NODE":
       return {
         ...state,
-        nodes: [...state.nodes, action.payload],
+        nodes: [
+          ...state.nodes,
+          {
+            id: nanoid(),
+            ...action.payload,
+          },
+        ],
       };
 
     case "CREATE_EDGE": {
-      const source = state.nodes.find(
-        (node) => node.id === action.payload.source,
-      );
-
-      const target = state.nodes.find(
-        (node) => node.id === action.payload.target,
-      );
-
-      if (!source || !target) {
-        return state;
-      }
-
-      const handles = getConnectionHandles(source, target);
-
       const edge: Edge = {
-        id: crypto.randomUUID(),
-        ...action.payload,
+        id: nanoid(),
         type: "SHARP",
-        sourceHandle: handles.sourceHandle,
-        targetHandle: handles.targetHandle,
+        ...action.payload,
       };
 
       return {
@@ -111,26 +109,11 @@ export const ActionEditor = (
     }
 
     case "CHANGE_NODE": {
-      const nodes = applyNodeChanges<EditorNodeProps>(
-        action.payload,
-        state.nodes,
-      );
-
-      const positionChanged = action.payload.some(
-        (change) => change.type === "position",
-      );
-
-      if (!positionChanged) {
-        return {
-          ...state,
-          nodes,
-        };
-      }
+      const nodes = applyNodeChanges<NodeData>(action.payload, state.nodes);
 
       return {
         ...state,
         nodes,
-        edges: updateEdgeHandles(nodes, state.edges),
       };
     }
 
@@ -146,10 +129,9 @@ export const ActionEditor = (
 };
 
 type InitialEditorProps = {
-  nodes: EditorNodeProps[];
+  nodes: NodeData[];
   edges: Edge[];
   tool: ToolboxItemProps["id"];
-  state: "IDLE" | "RUNNING" | "SUCCESS" | "ERROR";
 };
 
 type ActionEditorProps =
@@ -159,18 +141,18 @@ type ActionEditorProps =
     }
   | {
       type: "CREATE_NODE";
-      payload: EditorNodeProps;
+      payload: CreateNodeProps<NodeData>;
     }
   | {
       type: "CREATE_EDGE";
       payload: Connection;
     }
   | {
-      type: "CHANGE_NODE"; // Handles DRAGGING, SELECTING, DESELECTING, RESIZING a node
-      payload: NodeChange<EditorNodeProps>[];
+      type: "CHANGE_NODE";
+      payload: NodeChange<NodeData>[];
     }
   | {
-      type: "CHANGE_EDGE"; // Same as node
+      type: "CHANGE_EDGE";
       payload: EdgeChange<Edge>[];
     };
 

@@ -1,11 +1,12 @@
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useNodeConnections } from "@xyflow/react";
 
 import { cn } from "@/lib/utils/cn";
 
 type HandleType = "source" | "target";
 
-type BaseHandle = {
+type BaseHandleProps = {
   positions: Partial<Record<"top" | "right" | "bottom" | "left", HandleType[]>>;
+  connectionCount?: number;
 };
 
 const config = {
@@ -38,34 +39,62 @@ const config = {
   }
 >;
 
-export function BaseHandle({ positions }: BaseHandle) {
+function SingleHandle({
+  side,
+  type,
+  maxConnections = 1,
+}: {
+  side: "top" | "right" | "bottom" | "left";
+  type: HandleType;
+  maxConnections?: number;
+}) {
+  const handleId = `${side}-${type}`;
+  const handleConfig = config[side];
+
+  const connections = useNodeConnections({
+    handleType: type,
+    handleId,
+  });
+
   return (
-    <>
+    <Handle
+      id={handleId}
+      type={type}
+      position={handleConfig.position}
+      isConnectable={connections.length < maxConnections}
+      style={{
+        clipPath: handleConfig.clipPath,
+      }}
+      className={cn(
+        "size-6 transform-none rounded-none border-none",
+        handleConfig.className,
+        {
+          "opacity-0": type === "target",
+          "bg-accent-ink": type === "source",
+        },
+      )}
+    />
+  );
+}
+
+export function BaseHandle({
+  positions,
+  connectionCount = 1,
+}: BaseHandleProps) {
+  return (
+    <div className="absolute inset-1">
       {Object.entries(positions).flatMap(([side, types]) => {
         if (!types) return [];
 
-        const handle = config[side as keyof typeof config];
-
         return types.map((type) => (
-          <Handle
+          <SingleHandle
             key={`${side}-${type}`}
-            id={`${side}-${type}`}
+            side={side as keyof typeof config}
             type={type}
-            position={handle.position}
-            style={{
-              clipPath: handle.clipPath,
-            }}
-            className={cn(
-              "size-6 transform-none rounded-none border-none",
-              handle.className,
-              {
-                "opacity-0": type === "target",
-                "bg-accent-ink": type === "source",
-              },
-            )}
+            maxConnections={connectionCount}
           />
         ));
       })}
-    </>
+    </div>
   );
 }
