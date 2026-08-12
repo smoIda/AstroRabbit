@@ -44,12 +44,20 @@ export const InitialEditor: InitialEditorProps = {
       data: {
         label: "User",
         icon: Globe,
-        duration: 0,
 
-        method: "GET",
-        url: "/users",
-        headers: {},
-        body: "Hello world from hee hee",
+        input: {
+          headers: {
+            "Content-type": "application/json",
+          },
+          method: "GET",
+          body: "Hello world from hee hee hahahahahahahahaha",
+          url: "/users",
+        },
+
+        output: {
+          status: "IDLE",
+          duration: 0,
+        },
       },
     },
 
@@ -63,9 +71,15 @@ export const InitialEditor: InitialEditorProps = {
       data: {
         label: "/users",
         icon: Database,
-        duration: 0,
 
-        database: "MongoDB",
+        input: {
+          database: "MongoDB",
+        },
+
+        output: {
+          status: "IDLE",
+          duration: 0,
+        },
       },
     },
   ],

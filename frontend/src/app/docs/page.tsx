@@ -9,7 +9,7 @@ export default function Documents() {
   const scope = useParallax();
 
   return (
-    <Section ref={scope} previousRoute="/" nextRoute="/projects/test">
+    <Section ref={scope} previousRoute="/">
       <SectionHeading srOnly="Documents" />
     </Section>
   );

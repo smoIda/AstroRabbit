@@ -8,7 +8,6 @@ import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
 
 import { cn } from "@/lib/utils/cn";
-import { useEffect } from "react";
 
 type BaseNodeProps = NodeProps<NodeData> & {
   children: React.ReactNode;
@@ -34,27 +33,71 @@ export function BaseNode(props: BaseNodeProps) {
         />
       </NodeToolbar>
 
-      <div className="relative flex size-25 items-center justify-center">
-        <Icon className="stroke-ink-soft size-2/5" />
+      <div className="border-ink bg-white-ink relative flex w-80 flex-col border-2">
+        <div className="flex w-full items-center gap-x-4 px-4 py-2">
+          <div className="relative flex size-8 shrink-0 items-center justify-center">
+            <Diamond variant="filled" className="absolute inset-0 size-8" />
 
-        {props.children}
+            <Icon className="stroke-ink-soft relative z-10 size-5" />
+          </div>
 
-        <Diamond
-          className={cn(
-            "absolute top-1/2 left-1/2 -z-10 size-18 -translate-1/2",
-            nodeStatus[props.id] === "RUNNING" && "border-green-400!",
-            nodeStatus[props.id] === "FINISHED" && "border-amber-500"!,
-            nodeStatus[props.id] === "CANCELLED" && "border-sky-500"!,
-            nodeStatus[props.id] === "ERROR" && "border-red-600!",
-          )}
-          variant="filled"
-        />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate text-lg font-semibold">
+              {props.data.label}
+            </span>
 
-        {props.selected && <Shadow className="size-20 rotate-45" scale={1} />}
+            <span className="text-xs">{props.type.replace("_", " ")}</span>
+          </div>
+        </div>
 
-        <span className="absolute -top-10">
-          {props.id + " - " + props.data.duration + "s"}
-        </span>
+        <div className="border-ink/10! flex w-full flex-col items-start gap-y-2 border-t-2 p-2">
+          {Object.entries(props.data.input).map(([key, value]) => {
+            return (
+              <div
+                key={key}
+                className="flex w-full items-center justify-between"
+              >
+                <span className="text-xs font-semibold uppercase">{key}</span>
+
+                <span className="w-40 truncate text-right text-xs">
+                  {typeof value === "object" ? JSON.stringify(value) : value}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="border-ink/10! flex w-full flex-col items-start gap-y-2 border-t-2 p-2">
+          {Object.entries(props.data.output).map(([key, value]) => {
+            return (
+              <div
+                key={key}
+                className="flex w-full items-center justify-between"
+              >
+                <span className="text-xs font-semibold uppercase">{key}</span>
+
+                <span className="w-40 truncate shrink-0 text-right text-xs">
+                  {key === "duration" ? (
+                    value + " ms"
+                  ) : (
+                    <Diamond
+                      variant="filled"
+                      className={cn(
+                        "border",
+                        nodeStatus[props.id] === "RUNNING" && "bg-accent-ink",
+                        nodeStatus[props.id] === "FINISHED" && "bg-green-500",
+                        nodeStatus[props.id] === "ERROR" && "bg-red-500",
+                        nodeStatus[props.id] === "CANCELLED" && "bg-orange-500",
+                      )}
+                    />
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {props.selected && <Shadow />}
       </div>
     </>
   );

@@ -76,6 +76,9 @@ export function Canvas() {
         selectionMode={SelectionMode.Partial}
         connectionMode={ConnectionMode.Strict}
 
+        minZoom={1}
+        maxZoom={1}
+
         fitView
         proOptions={{ hideAttribution: true }}
       />

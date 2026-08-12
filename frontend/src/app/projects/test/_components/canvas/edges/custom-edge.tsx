@@ -1,7 +1,7 @@
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
+
 import { cn } from "@/lib/utils/cn";
 
 export function CustomEdge({
@@ -25,7 +25,6 @@ export function CustomEdge({
     offset: 20,
   });
 
-  const { state } = useEditor();
   const { edgeStatus } = useExecutor();
 
   return (

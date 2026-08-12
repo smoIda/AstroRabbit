@@ -20,14 +20,14 @@ const styles = cva("absolute top-1/2 left-1/2 -translate-1/2 -z-50 size-full", {
 
 type ShadowProps = Omit<React.ComponentPropsWithoutRef<"span">, "children"> &
   VariantProps<typeof styles> & {
-    scale?: number;
+    spread?: number;
     opacity?: number;
   };
 
 export function Shadow(props: ShadowProps) {
   const {
     color,
-    scale = 1.05,
+    spread = 16,
     opacity = 60,
     style,
     className,
@@ -38,15 +38,12 @@ export function Shadow(props: ShadowProps) {
     <div
       style={
         {
-          ...style,
-          "--shadow-scale": scale,
-          "--shadow-opacity": opacity / 100,
+          width: `calc(100% + ${spread}px)`,
+          height: `calc(100% + ${spread}px)`,
+          opacity: opacity / 100,
         } as React.CSSProperties
       }
-      className={cn(
-        styles({ color, className }),
-        "scale-(--shadow-scale) opacity-(--shadow-opacity)",
-      )}
+      className={cn(styles({ color, className }))}
       {...shadowProps}
     />
   );

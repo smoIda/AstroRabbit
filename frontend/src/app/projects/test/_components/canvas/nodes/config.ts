@@ -4,26 +4,40 @@ import { LucideIcon } from "lucide-react";
 
 import { HttpRequestNode } from "@/app/projects/test/_components/canvas/nodes/http-request-node";
 import { DatabaseNode } from "@/app/projects/test/_components/canvas/nodes/database-node";
+import { NodeStatus } from "@/app/projects/test/_providers/executor-provider";
 
 export type Base = {
   label: string;
   icon: LucideIcon;
-  duration: number;
 };
 
 export type HttpRequest = Node<
   Base & {
-    method: "GET" | "POST";
-    url: string;
-    headers: Record<string, string>;
-    body: string;
+    input: {
+      headers: Record<string, string>;
+      method: "GET" | "POST";
+      body: string;
+      url: string;
+    };
+
+    output: {
+      status: NodeStatus;
+      duration: number;
+    };
   },
   "HTTP_REQUEST"
 >;
 
 export type Database = Node<
   Base & {
-    database: string;
+    input: {
+      database: "MongoDB" | "PostgreSQL" | "MySQL";
+    };
+
+    output: {
+      status: NodeStatus;
+      duration: number;
+    };
   },
   "DATABASE"
 >;

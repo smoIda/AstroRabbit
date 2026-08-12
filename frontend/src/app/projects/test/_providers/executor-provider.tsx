@@ -30,9 +30,9 @@ export type ExecutorContext = UseMutationResult<
   streamError: string | null;
 };
 
-type ExecutionStatus = "IDLE" | "RUNNING" | "FINISHED" | "CANCELLED" | "ERROR";
-type NodeStatus = ExecutionStatus;
-type EdgeStatus = Omit<ExecutionStatus, "CANCELLED" | "ERROR">;
+export type ExecutionStatus = "IDLE" | "RUNNING" | "FINISHED" | "CANCELLED" | "ERROR";
+export type NodeStatus = ExecutionStatus;
+export type EdgeStatus = Omit<ExecutionStatus, "CANCELLED" | "ERROR">;
 
 type ExecutionEvent = {
   type:
