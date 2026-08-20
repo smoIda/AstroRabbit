@@ -1,0 +1,32 @@
+@import "@xyflow/react/dist/style.css" layer(base);
+@import "tailwindcss";
+@import "../../../../globals.css";
+
+@theme {
+  --animate-edge-running: edge-running 2s linear infinite
+}
+
+.react-flow__pane {
+  cursor: default;
+}
+
+.react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.react-flow__node {
+  cursor: default;
+}
+
+.react-flow__node.dragging {
+  cursor: move;
+}
+
+@keyframes edge-running {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
