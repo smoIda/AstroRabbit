@@ -2,6 +2,8 @@
 
 import { LucideIcon, Play, Redo, Square, Undo } from "lucide-react";
 
+import { useReactFlow } from "@xyflow/react";
+
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 
@@ -38,14 +40,22 @@ export function Header() {
 
   const { state: editorState } = useEditor();
 
-  const startAt = editorState.nodes.find((node) => node.selected)?.id;
+  const { getNode } = useReactFlow();
+
+  const startAt =
+    editorState.edges.find((edge) => getNode(edge.source)?.type === "START")
+      ?.target ?? "";
+
+  const nodes = editorState.nodes.filter((node) => node.type !== "START");
+
+  const edges = editorState.edges.filter(
+    (edge) => getNode(edge.source)?.type !== "START",
+  );
 
   const execute = () => {
-    const request: ExecutionRequest = {
-      nodes: editorState.nodes,
-      edges: editorState.edges,
-      startAt: startAt ?? "1",
-    };
+    const request: ExecutionRequest = { nodes, edges, startAt };
+
+    console.log(request);
 
     mutate(request);
   };

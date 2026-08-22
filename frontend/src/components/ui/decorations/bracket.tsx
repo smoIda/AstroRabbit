@@ -19,7 +19,7 @@ const styles = cva("pointer-events-none absolute select-none", {
       "accent-soft": "bg-accent-ink-soft",
     },
 
-    size: { sm: "size-3", md: "size-3.5", lg: "size-4" },
+    size: { xs: "size-2", sm: "size-3", md: "size-3.5", lg: "size-4" },
   },
 
   defaultVariants: {
@@ -29,7 +29,7 @@ const styles = cva("pointer-events-none absolute select-none", {
   },
 });
 
-type Bracket = Omit<React.HTMLAttributes<HTMLElement>, "children"> &
+type Bracket = Omit<React.ComponentPropsWithoutRef<"span">, "children"> &
   VariantProps<typeof styles>;
 
 type BracketGroup = Omit<Bracket, "position">;
@@ -59,7 +59,10 @@ export function BracketGroup({
   ...props
 }: BracketGroup) {
   return (
-    <div className={cn("relative size-full", className)} {...props}>
+    <div
+      className={cn("pointer-events-none absolute inset-0", className)}
+      {...props}
+    >
       <Bracket position="top-left" color={color} size={size} />
       <Bracket position="top-right" color={color} size={size} />
       <Bracket position="bottom-left" color={color} size={size} />

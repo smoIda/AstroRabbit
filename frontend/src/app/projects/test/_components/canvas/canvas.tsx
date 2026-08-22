@@ -10,6 +10,7 @@ import {
   Edge,
   EdgeChange,
   getOutgoers,
+  Node,
   NodeChange,
   ReactFlow,
   SelectionMode,
@@ -28,6 +29,7 @@ import {
 import { CustomConnectionLine } from "@/app/projects/test/_components/canvas/edges/connection-line";
 import "@/app/projects/test/_components/canvas/config.css";
 import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
+import { handleConfig } from "@/app/projects/test/_components/canvas/nodes/base/config";
 
 export function Canvas() {
   const { state, dispatch } = useEditor();
@@ -84,26 +86,40 @@ export function Canvas() {
   );
 
   const isValidConnection = (edgeOrConnection: Connection | Edge) => {
-    if (edgeOrConnection.source === edgeOrConnection.target) return false;
-    if (
-      edgeOrConnection.sourceHandle &&
-      edgeOrConnection.targetHandle &&
-      edgeOrConnection.sourceHandle === edgeOrConnection.targetHandle
-    ) {
-      return false;
+    const { source, target, targetHandle } = edgeOrConnection;
+
+    if (source === target) return false;
+
+    // Hinders multiple edges between 2 nodes
+    const hasNodePairDuplicate = state.edges.some(
+      (e) => e.source === source && e.target === target,
+    );
+    if (hasNodePairDuplicate) return false;
+
+    // Handle's isConnectable only controls direct UI interaction, it doesn't account for graph state or connection limits.
+    if (targetHandle) {
+      const targetConnections = state.edges.filter(
+        (e) => e.target === target && e.targetHandle === targetHandle,
+      );
+
+      if (targetConnections.length >= handleConfig.MAX_CONNECTIONS)
+        return false;
     }
 
-    const targetNode = getNode(edgeOrConnection.target);
-    if (!targetNode) return false;
+    const sourceNode = getNode(source);
+    const targetNode = getNode(target);
 
+    if (!targetNode || !sourceNode) return false;
+
+    // Hinders Node A -> Node B -> Node C -> Node A
     const edges = state.edges;
     const nodes = state.nodes;
 
-    const hasCycle = (node: any, visited = new Set<string>()): boolean => {
+    const hasCycle = (node: Node, visited = new Set<string>()): boolean => {
       if (visited.has(node.id)) return false;
       visited.add(node.id);
 
-      if (node.id === edgeOrConnection.source) return true;
+      if (node.id === source) return true;
 
       const outgoers = getOutgoers(node, nodes, edges);
       return outgoers.some((outgoer) => hasCycle(outgoer, visited));
@@ -126,9 +142,10 @@ export function Canvas() {
       onEdgesChange={onEdgesChange}
       onEdgesDelete={onEdgesDelete}
 
+      connectionLineComponent={CustomConnectionLine}
+
       onConnect={onConnect}
       isValidConnection={isValidConnection}
-      connectionLineComponent={CustomConnectionLine}
 
       deleteKeyCode={["Backspace", "Delete"]}
 

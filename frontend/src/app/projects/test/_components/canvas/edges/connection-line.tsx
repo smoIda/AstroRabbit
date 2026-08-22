@@ -1,8 +1,4 @@
-import {
-  ConnectionLineComponentProps,
-  getSmoothStepPath,
-  Position,
-} from "@xyflow/react";
+import { ConnectionLineComponentProps, getSmoothStepPath } from "@xyflow/react";
 
 export function CustomConnectionLine({
   fromX,
@@ -12,19 +8,19 @@ export function CustomConnectionLine({
   fromPosition,
   toPosition,
 }: ConnectionLineComponentProps) {
-  const OFFSET = 8;
+  // const OFFSET = 8;
 
-  switch (fromPosition) {
-    case Position.Left:
-      fromX -= OFFSET;
-      toX += OFFSET;
-      break;
+  // switch (fromPosition) {
+  //   case Position.Left:
+  //     fromX -= OFFSET;
+  //     toX += OFFSET;
+  //     break;
 
-    case Position.Right:
-      fromX += OFFSET;
-      toX -= OFFSET;
-      break;
-  }
+  //   case Position.Right:
+  //     fromX += OFFSET;
+  //     toX -= OFFSET;
+  //     break;
+  // }
 
   const [edgePath] = getSmoothStepPath({
     sourceX: fromX,
@@ -34,7 +30,7 @@ export function CustomConnectionLine({
     targetY: toY,
     targetPosition: toPosition,
     borderRadius: 0,
-    offset: 20,
+    offset: 32,
   });
 
   return (

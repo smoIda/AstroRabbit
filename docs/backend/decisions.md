@@ -1,31 +1,25 @@
-# Architecture Decisions
+# Use SSE for execution streaming
 
-## 001 — Use SSE for execution streaming
-
-### Context
+## Context
 The frontend needs to receive real-time node execution events
 while the backend executes a flow.
 
-### Decision
+## Decision
 Use Server-Sent Events (SSE) for backend - frontend execution events.
 
-### Why
+## Why
 - Execution events are primarily one-way.
 - Browser has native EventSource support.
 - Simpler than WebSockets.
 - REST can handle commands such as pause/cancel later.
 
-### Alternatives considered
+## Alternatives considered
 
-#### WebSocket
+### WebSocket
 Could provide bidirectional communication over one connection,
 but adds complexity that v1 doesn't need.
 
-#### Polling
-Simpler, but introduces latency and unnecessary requests.
+If interactive debugging becomes sufficiently complex, WebSockets may be reconsidered.
 
-### Consequences
-- Execution events are streamed through SSE.
-- Commands continue using HTTP endpoints.
-- If interactive debugging becomes sufficiently complex,
-  WebSockets may be reconsidered.
+### Polling
+Simpler, but introduces latency and unnecessary requests.

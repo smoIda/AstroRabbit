@@ -12,28 +12,19 @@ import {
   Focus,
 } from "lucide-react";
 
-import { Base } from "@/app/projects/test/_components/canvas/nodes/base/config";
+import {
+  BaseNode,
+} from "@/app/projects/test/_components/canvas/nodes/base/config";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
-type Properties = {
-  id: string;
-  data: Base;
-  x: number;
-  y: number;
-};
-
-export function Properties(props: Properties) {
+export function Properties(props: BaseNode) {
   const { state, dispatch } = useEditor();
   const [label, setLabel] = useState(props.data.label);
 
   return (
-    <div className="relative w-80 rounded-lg border-2 border-slate-900 bg-white p-4 font-sans shadow-sm">
-      {/* Top Right Decorative Ribbon */}
-      <div className="absolute top-0 right-0 h-0 w-0 border-t-[20px] border-l-[20px] border-t-rose-500 border-l-transparent" />
+    <div className="relative w-100 border-2 bg-white-ink p-4 font-sans shadow-sm">
 
-      {/* Header Section */}
       <div className="flex items-start gap-3 pb-3">
-        {/* Diamond Icon Container */}
         <div className="flex h-10 w-10 shrink-0 rotate-45 items-center justify-center border-2 border-slate-900 bg-white">
           <Globe className="h-5 w-5 -rotate-45 text-slate-800" />
         </div>
@@ -123,12 +114,12 @@ export function Properties(props: Properties) {
       <div className="flex items-center justify-between border-t border-dashed border-slate-300 pt-2 text-xs text-slate-500">
         <div className="flex items-center gap-1.5">
           <Clock className="h-3.5 w-3.5" />
-          <span>
-            X: {Math.round(props.x)} Y: {Math.round(props.y)}
-          </span>
+
         </div>
         <Focus className="h-4 w-4 text-slate-400" />
       </div>
+
+      <div>{JSON.stringify(props.data.output)}</div>
     </div>
   );
 }

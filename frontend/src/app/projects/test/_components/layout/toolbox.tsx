@@ -2,12 +2,20 @@
 
 import { useEffect } from "react";
 
-import { Database, Globe, LucideIcon, MousePointer2, Plus } from "lucide-react";
+import { LucideIcon, MousePointer2, Plus } from "lucide-react";
 
-import { CanvasNode } from "@/app/projects/test/_providers/editor/config";
+import {
+  CanvasNode,
+  CreateNode,
+  InitialEditor,
+} from "@/app/projects/test/_providers/editor/config";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
 import { Button } from "@/components/ui/primitives/button";
+import {
+  NODE_DEFAULTS,
+  SETTINGS,
+} from "@/app/projects/test/_components/canvas/config";
 
 const toolboxItems: ToolboxItem[] = [
   {
@@ -35,89 +43,55 @@ export type ToolboxItem = {
   keybind: "V";
 };
 
-export type CreateNode<T> = T extends CanvasNode ? Omit<T, "id"> : never;
+function validate(type: CanvasNode["type"], nodes: InitialEditor["nodes"]) {
+  const count = nodes.filter((node) => node.type === type).length;
+
+  if (count >= SETTINGS[type].maxInstances) return false;
+
+  return true;
+}
+
+// Unprovable typescript issue but the correlation is real omfg
+function create<T extends CanvasNode>(type: T["type"]): CreateNode<T> {
+  return {
+    type,
+    position: { x: Math.random(), y: Math.random() },
+    data: NODE_DEFAULTS[type],
+  } as CreateNode<T>;
+}
 
 export function Toolbox() {
   const { state, dispatch } = useEditor();
 
   useEffect(() => {
     const handleInsert = (e: KeyboardEvent) => {
-      try {
-        if (e.key === "E")
-          dispatch({
-            type: "CREATE_NODE",
-            payload: {
-              type: "HTTP_REQUEST",
-              position: {
-                x: 100,
-                y: 100,
-              },
-              data: {
-                label: "High Risk Customers",
-                icon: Globe,
-                provider: "CUSTOM_API",
-                badge: [],
+      let type: CanvasNode["type"];
 
-                config: {
-                  headers: {
-                    "Content-type": "application/json",
-                  },
-                  method: "GET",
-                  body: "Hello world from hee hee hahahahahahahahaha",
-                  url: "https://httpbingo.org/get",
-                },
+      switch (e.key) {
+        case "R":
+          type = "HTTP_REQUEST";
+          break;
 
-                runtime: {
-                  status: "IDLE",
-                  duration: 0,
-                },
+        case "T":
+          type = "DATABASE";
+          break;
 
-                output: {
-                  statusCode: 0,
-                  headers: {},
-                  body: "Hello from X Y Z",
-                },
-              },
-            },
-          });
-        else if (e.key === "F")
-          dispatch({
-            type: "CREATE_NODE",
-            payload: {
-              type: "DATABASE",
-              position: {
-                x: 10,
-                y: 10,
-              },
-              data: {
-                label: "/users",
-                icon: Database,
-                badge: [],
-
-                config: {
-                  database: "MongoDB",
-                },
-
-                runtime: {
-                  status: "IDLE",
-                  duration: 0,
-                },
-
-                output: {
-                  body: "Yo",
-                },
-              },
-            },
-          });
-      } catch (error) {
-        console.log(error);
+        default:
+          return;
       }
+
+      if (!validate(type, state.nodes)) return;
+
+      dispatch({
+        type: "CREATE_NODE",
+        payload: create(type),
+      });
     };
 
     window.addEventListener("keydown", handleInsert);
 
     return () => window.removeEventListener("keydown", handleInsert);
-  }, []);
+  }, [state.nodes]);
 
   return (
     <div className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-4">

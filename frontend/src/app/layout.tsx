@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import NewsFlashBB from "next/font/local";
 
 import { Menu } from "@/components/layout/menu";
@@ -13,14 +13,14 @@ export const headline = NewsFlashBB({
   variable: "--font-headline",
 });
 
-export const paragraph = Outfit({
+export const paragraph = Geist_Mono({
   variable: "--font-paragraph",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Astro Rabbit",
-  description: "Your icon library (how generic)",
+  description: "Flow debugger lets go",
 };
 
 export default function RootLayout({

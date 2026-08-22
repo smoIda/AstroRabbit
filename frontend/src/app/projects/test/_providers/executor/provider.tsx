@@ -133,8 +133,6 @@ export function ExecutorProvider({ children }: { children: React.ReactNode }) {
 
       onEvent(event);
 
-      console.log(event.type);
-
       if (
         event.type === "EXECUTION_SUCCESS" ||
         event.type === "EXECUTION_ERROR" ||

@@ -2,9 +2,9 @@ import { NodeProps } from "@xyflow/react";
 
 import { HardDrive } from "lucide-react";
 
-import { BaseHandle } from "@/app/projects/test/_components/canvas/nodes/base/handle";
 import { Database } from "@/app/projects/test/_components/canvas/nodes/core/database/config";
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/node";
+import { generateHandle } from "@/app/projects/test/_components/canvas/utils";
 
 const icons = {
   DATABASE: HardDrive,
@@ -12,8 +12,10 @@ const icons = {
 
 export function DatabaseNode(node: NodeProps<Database>) {
   return (
-    <BaseNode {...node} configIcons={icons}>
-      <BaseHandle sides={["left", "right"]} />
-    </BaseNode>
+    <BaseNode
+      {...node}
+      configIcons={icons}
+      handles={generateHandle(node.type)}
+    />
   );
 }

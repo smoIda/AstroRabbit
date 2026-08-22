@@ -1,14 +1,17 @@
+import { useState } from "react";
+
 import { NodeToolbar, Position, useConnection, useStore } from "@xyflow/react";
 
 import {
   Ban,
   CheckCheck,
   Clock,
+  FastForward,
   LucideIcon,
+  Play,
   PlusSquare,
   Square,
   SquareDashed,
-  SquareX,
   Trash2,
 } from "lucide-react";
 
@@ -18,6 +21,8 @@ import {
   NodeStatus,
   type BaseNode,
 } from "@/app/projects/test/_components/canvas/nodes/base/config";
+import { BaseHandle } from "@/app/projects/test/_components/canvas/nodes/base/handle";
+import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 
 import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
@@ -26,33 +31,41 @@ import { Badge } from "@/components/ui/primitives/badge";
 import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
-import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
-import { useState } from "react";
+import { ExecutionRequest } from "@/lib/api/executor";
 
 const STATUS_ICONS: Record<NodeStatus, LucideIcon> = {
   IDLE: SquareDashed,
   RUNNING: Square,
   SUCCESS: CheckCheck,
-  SKIPPED: Ban,
-  ERROR: SquareX,
+  SKIPPED: FastForward,
+  ERROR: Ban,
 };
 
 function Label(data: BaseNode["data"]) {
   const [isRenaming, setIsRenaming] = useState(false);
-  const [oldLabel, setOldLabel] = useState(data.label.trim());
-  const [label, setLabel] = useState(data.label.trim());
+  const [oldLabel, setOldLabel] = useState(data.label);
+  const [label, setLabel] = useState(data.label);
 
   const onStart = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    setOldLabel(label.trim() || oldLabel);
+    setOldLabel(label);
     setIsRenaming(true);
+  };
+
+  const onCommit = () => {
+    if (label.trim().length === 0) setLabel(oldLabel);
+    else {
+      setLabel(label.trim());
+      setOldLabel(label.trim());
+    }
+    setIsRenaming(false);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.stopPropagation();
 
-    if (e.key === "Enter") setIsRenaming(false);
+    if (e.key === "Enter") onCommit();
 
     if (e.key === "Escape") {
       setLabel(oldLabel.trim());
@@ -63,10 +76,11 @@ function Label(data: BaseNode["data"]) {
   return isRenaming ? (
     <input
       type="text"
-      value={label.trim()}
+      value={label}
+      placeholder="Node name"
       autoFocus
       onChange={(e) => setLabel(e.target.value)}
-      onBlur={() => setIsRenaming(false)}
+      onBlur={onCommit}
       onKeyDown={onKeyDown}
       className="text-ink nopan nodrag mb-1 w-full border-b text-lg font-semibold outline-none"
     />
@@ -85,11 +99,13 @@ export function BaseNode(props: BaseNode) {
   const NodeIcon = props.data.icon;
   const StatusIcon = STATUS_ICONS[props.data.runtime.status];
 
-  const { dispatch: editorDispatch } = useEditor();
-
-  const { inProgress } = useConnection();
-
-  const { state: executionState, skipNodeExecution } = useExecutor();
+  const { state: editorState, dispatch: editorDispatch } = useEditor();
+  const { inProgress } = useConnection(); // Detects edges dragging
+  const {
+    state: executionState,
+    skipNodeExecution,
+    mutate: Execute,
+  } = useExecutor();
 
   const selectedCount = useStore(
     (s) => s.nodes.filter((node) => node.selected).length,
@@ -103,6 +119,24 @@ export function BaseNode(props: BaseNode) {
     return `${duration.toFixed(2)}\u00A0s`;
   }
 
+  const start = (startAt: string) => {
+    const nodes = editorState.nodes.filter(
+      (node) =>
+        node.id === startAt ||
+        editorState.edges.some(
+          (edge) => edge.source === node.id || edge.target === node.id,
+        ),
+    );
+
+    const edges = editorState.edges;
+
+    const request: ExecutionRequest = { nodes, edges, startAt };
+
+    console.log(request);
+
+    Execute(request);
+  };
+
   const skip = (executionId: string, nodeId: string) => {
     if (!nodeId || !executionId) return;
 
@@ -112,22 +146,48 @@ export function BaseNode(props: BaseNode) {
   return (
     <>
       <NodeToolbar
-        isVisible={props.selected && selectedCount === 1}
-        position={Position.Right}
-        offset={32}
+        isVisible={props.selected && selectedCount === 1 && !inProgress}
+        position={Position.Top}
+        offset={16}
       >
-        <Properties
-          id={props.id}
-          data={props.data}
-          x={props.positionAbsoluteX}
-          y={props.positionAbsoluteY}
-        />
+        <Properties {...props} />
       </NodeToolbar>
+
+      <div className="w-full">
+        <span>{props.id}</span>
+        <Button
+          onClick={() => {
+            if (!props.id) return;
+
+            start(props.id);
+          }}
+          size="icon"
+          aria-label="Run"
+          variant="no-brackets"
+        >
+          <Play size={12} />
+        </Button>
+
+        {props.data.runtime.status === "RUNNING" && (
+          <Button
+            onClick={() => {
+              if (!executionState.id) return;
+
+              skip(executionState.id, props.id);
+            }}
+            className="nopan nodrag bg-accent-ink absolute -top-6 right-0 px-1"
+            variant="no-brackets"
+          >
+            Skip
+          </Button>
+        )}
+      </div>
 
       <div
         className={cn(
-          "group bg-white-ink relative flex w-80 flex-col border-2",
+          "group relative flex w-80 flex-col border-2 bg-white",
           selectedCount > 0 && !props.selected && "border-ink/40 *:opacity-40",
+          props.className,
         )}
       >
         <Bracket
@@ -137,7 +197,10 @@ export function BaseNode(props: BaseNode) {
 
         <div className="flex w-full items-center gap-x-4 px-4 py-2">
           <div className="relative flex size-8 shrink-0 items-center justify-center">
-            <Diamond variant="filled" className="absolute inset-0 size-8" />
+            <Diamond
+              variant="filled"
+              className="from-white-ink/40 via-white-ink-soft/20 to-white-ink-soft absolute inset-0 size-8 bg-linear-to-br"
+            />
 
             <NodeIcon className="stroke-ink relative z-10 size-5" />
           </div>
@@ -296,21 +359,13 @@ export function BaseNode(props: BaseNode) {
         {props.selected && <Shadow />}
       </div>
 
-      {props.children}
-
-      {props.data.runtime.status === "RUNNING" && (
-        <Button
-          onClick={() => {
-            if (!executionState.id) return;
-
-            skip(executionState.id, props.id);
-          }}
-          className="nopan nodrag bg-accent-ink absolute -top-6 right-0 px-1"
-          variant="no-brackets"
-        >
-          Skip
-        </Button>
-      )}
+      <BaseHandle
+        handles={props.handles}
+        className={cn(
+          "pointer-events-none opacity-0",
+          (props.selected || inProgress) && "pointer-events-auto opacity-100",
+        )}
+      />
     </>
   );
 }

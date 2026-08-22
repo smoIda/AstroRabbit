@@ -4,6 +4,17 @@ import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
 import { cn } from "@/lib/utils/cn";
 
+function randomOffset(id: string, min = 32, max = 64) {
+  let hash = 0;
+
+  for (let i = 0; i < id.length; i += 4)
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+
+  const positiveHash = Math.abs(hash);
+
+  return min + (positiveHash % (max - min + 1));
+}
+
 export function Sharp({
   id,
   sourceX,
@@ -14,14 +25,14 @@ export function Sharp({
   targetPosition,
 }: EdgeProps) {
   const [edgePath] = getSmoothStepPath({
-    sourceX,
+    sourceX: sourceX - 20,
     sourceY,
     sourcePosition,
-    targetX,
+    targetX: targetX + 20,
     targetY,
     targetPosition,
     borderRadius: 0,
-    offset: 20,
+    offset: randomOffset(id),
   });
 
   const { state } = useEditor();

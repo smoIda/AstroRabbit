@@ -4,10 +4,7 @@ import {
   CanvasEdge,
   EdgeStatus,
 } from "@/app/projects/test/_components/canvas/edges/config";
-import {
-  CreateNode,
-  ToolboxItem,
-} from "@/app/projects/test/_components/layout/toolbox";
+import { ToolboxItem } from "@/app/projects/test/_components/layout/toolbox";
 import {
   HttpRequest,
   HttpRequestData,
@@ -18,6 +15,8 @@ import {
 } from "@/app/projects/test/_components/canvas/nodes/core/database/config";
 import { HttpRequestNode } from "@/app/projects/test/_components/canvas/nodes/core/http-request/node";
 import { DatabaseNode } from "@/app/projects/test/_components/canvas/nodes/core/database/node";
+
+export type CreateNode<T> = T extends CanvasNode ? Omit<T, "id"> : never;
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
