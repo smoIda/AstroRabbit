@@ -1,7 +1,9 @@
 import { useContext } from "react";
 
-import { ExecutorContext } from "@/app/projects/test/_providers/executor/provider";
-import { ExecutorContextValue } from "@/app/projects/test/_providers/executor/config";
+import {
+  ExecutorContext,
+  ExecutorContextValue,
+} from "@/app/projects/test/_providers/executor/provider";
 
 export function useExecutor(): ExecutorContextValue {
   const context = useContext(ExecutorContext);

@@ -2,146 +2,89 @@
 
 import { createContext, useMemo, useReducer } from "react";
 
-import { nanoid } from "nanoid";
+import { Connection, EdgeChange, NodeChange } from "@xyflow/react";
 
-import { addEdge, applyEdgeChanges, applyNodeChanges } from "@xyflow/react";
-
-import { CanvasEdge } from "@/app/projects/test/_components/canvas/edges/config";
-import {
-  modifyNodeBadge,
-  modifyNodeData,
-} from "@/app/projects/test/_providers/editor/utils";
+import { CanvasEdge, EdgeStatus } from "@/app/projects/test/_components/canvas/edges/config";
 import {
   ActionEditor,
   CanvasNode,
-  EditorContextValue,
+  DeepPartial,
   InitialEditor,
+  NodeData,
 } from "@/app/projects/test/_providers/editor/config";
+import { ToolboxItem } from "@/app/projects/test/_components/layout/toolbox";
+import { NodeStatus } from "@/app/projects/test/_components/canvas/nodes/base/config";
+import { actionEditor, initialEditor } from "@/app/projects/test/_providers/editor/reducer";
 
-export const EditorContext = createContext<EditorContextValue | undefined>(
-  undefined,
-);
-
-export const initialEditor: InitialEditor = {
-  tool: "SELECT",
-  nodes: [],
-  edges: [],
+export type EditorContextValue = {
+  state: InitialEditor;
+  action: ReturnType<typeof EditorDispatch>;
 };
 
-export const actionEditor = (
-  state: InitialEditor,
-  action: ActionEditor,
-): InitialEditor => {
-  switch (action.type) {
-    case "SELECT_TOOL":
-      return {
-        ...state,
-        tool: action.payload,
-      };
+export const EditorContext = createContext<EditorContextValue | undefined>(undefined);
 
-    case "MODIFY_BADGE":
-      return {
-        ...state,
-        nodes: state.nodes.map((node) =>
-          node.id === action.payload.nodeId
-            ? modifyNodeBadge(action.payload.method, node, action.payload.badge)
-            : node,
-        ),
-      };
+function EditorDispatch(dispatch: React.Dispatch<ActionEditor>) {
+  return {
+    selectTool: (toolId: ToolboxItem["id"]) => dispatch({ type: "SELECT_TOOL", payload: toolId }),
 
-    case "CREATE_NODE":
-      return {
-        ...state,
-        nodes: [
-          ...state.nodes,
-          {
-            id: nanoid(),
-            ...action.payload,
+    setBadge: (nodeId: string, method: "CREATE" | "DELETE", badge: string) =>
+      dispatch({
+        type: "SET_BADGE",
+        payload: { nodeId, method, badge },
+      }),
+
+    createNode: (type: CanvasNode["type"]) => dispatch({ type: "CREATE_NODE", payload: type }),
+
+    changeNode: (changes: NodeChange<CanvasNode>[]) =>
+      dispatch({
+        type: "CHANGE_NODE",
+        payload: changes,
+      }),
+
+    setNode: (
+      nodeId: string,
+      status: NodeStatus,
+      duration?: number,
+      output?: DeepPartial<NodeData["output"]>,
+    ) =>
+      dispatch({
+        type: "SET_NODE",
+        payload: {
+          id: nodeId,
+          data: {
+            runtime: { status, duration: duration ?? 0 },
+
+            output,
           },
-        ],
-      };
+        },
+      }),
 
-    case "CHANGE_NODE": {
-      return {
-        ...state,
-        nodes: applyNodeChanges<CanvasNode>(action.payload, state.nodes),
-      };
-    }
+    deleteNode: (nodeId: string) => dispatch({ type: "DELETE_NODE", payload: nodeId }),
 
-    case "SET_NODE":
-      return {
-        ...state,
-        nodes: state.nodes.map((node) =>
-          node.id === action.payload.id
-            ? modifyNodeData(node, action.payload.data)
-            : node,
-        ),
-      };
+    createEdge: (connection: Connection) => dispatch({ type: "CREATE_EDGE", payload: connection }),
 
-    case "DELETE_NODE":
-      return {
-        ...state,
-        nodes: state.nodes.filter((node) => node.id !== action.payload),
-      };
+    changeEdge: (changes: EdgeChange<CanvasEdge>[]) =>
+      dispatch({ type: "CHANGE_EDGE", payload: changes }),
 
-    case "CREATE_EDGE": {
-      const edge: CanvasEdge = {
-        id: nanoid(),
-        type: "SHARP",
-        ...action.payload,
-      };
+    setEdge: (edgeId: string, status: EdgeStatus) =>
+      dispatch({ type: "SET_EDGE", payload: { id: edgeId, status } }),
 
-      return {
-        ...state,
-        edges: addEdge(edge, state.edges),
-      };
-    }
-
-    case "CHANGE_EDGE":
-      return {
-        ...state,
-        edges: applyEdgeChanges<CanvasEdge>(action.payload, state.edges),
-      };
-
-    case "SET_EDGE":
-      return {
-        ...state,
-        edges: state.edges.map((edge) =>
-          edge.id === action.payload.id
-            ? {
-                ...edge,
-                data: {
-                  ...edge.data,
-                  status: action.payload.status,
-                },
-              }
-            : edge,
-        ),
-      };
-
-    case "DELETE_EDGE":
-      return {
-        ...state,
-        edges: state.edges.filter((edge) => edge.id !== action.payload),
-      };
-
-    default:
-      return state;
-  }
-};
+    deleteEdge: (edgeId: string) => dispatch({ type: "DELETE_EDGE", payload: edgeId }),
+  };
+}
 
 export function EditorProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(actionEditor, initialEditor);
 
+  const action = useMemo(() => EditorDispatch(dispatch), [dispatch]);
+
   const values = useMemo(
     () => ({
       state,
-      dispatch,
+      action,
     }),
-    [state],
+    [state, action],
   );
 
-  return (
-    <EditorContext.Provider value={values}>{children}</EditorContext.Provider>
-  );
+  return <EditorContext.Provider value={values}>{children}</EditorContext.Provider>;
 }

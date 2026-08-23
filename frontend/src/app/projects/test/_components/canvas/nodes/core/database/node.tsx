@@ -6,7 +6,7 @@ import { Database } from "@/app/projects/test/_components/canvas/nodes/core/data
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/node";
 import { generateHandle } from "@/app/projects/test/_components/canvas/utils";
 
-const icons = {
+const ICONS = {
   DATABASE: HardDrive,
 } as const;
 
@@ -14,7 +14,7 @@ export function DatabaseNode(node: NodeProps<Database>) {
   return (
     <BaseNode
       {...node}
-      configIcons={icons}
+      configIcons={ICONS}
       handles={generateHandle(node.type)}
     />
   );

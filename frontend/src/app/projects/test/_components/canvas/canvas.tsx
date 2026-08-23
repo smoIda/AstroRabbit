@@ -28,105 +28,71 @@ import {
 } from "@/app/projects/test/_components/canvas/edges/config";
 import { CustomConnectionLine } from "@/app/projects/test/_components/canvas/edges/connection-line";
 import "@/app/projects/test/_components/canvas/config.css";
-import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 import { handleConfig } from "@/app/projects/test/_components/canvas/nodes/base/config";
 
 export function Canvas() {
-  const { state, dispatch } = useEditor();
-  const { state: abc } = useExecutor();
-
   const { getNode } = useReactFlow();
+  const { state, action } = useEditor();
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange<CanvasNode>[]) => {
-      dispatch({
-        type: "CHANGE_NODE",
-        payload: changes,
-      });
-    },
-    [dispatch],
-  );
+  const onNodesChange = (changes: NodeChange<CanvasNode>[]) =>
+    action.changeNode(changes);
 
-  const onNodesDelete = useCallback(
-    (nodes: CanvasNode[]) => {
-      nodes.forEach((node) => {
-        dispatch({ type: "DELETE_NODE", payload: node.id });
-      });
-    },
-    [dispatch],
-  );
+  const onNodesDelete = (nodes: CanvasNode[]) =>
+    nodes.forEach((node) => action.deleteNode(node.id));
 
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange<CanvasEdge>[]) => {
-      dispatch({
-        type: "CHANGE_EDGE",
-        payload: changes,
-      });
-    },
-    [dispatch],
-  );
+  const onConnect = (connection: Connection) => action.createEdge(connection);
 
-  const onEdgesDelete = useCallback(
-    (edge: CanvasEdge[]) => {
-      edge.forEach((edge) => {
-        dispatch({ type: "DELETE_EDGE", payload: edge.id });
-      });
-    },
-    [dispatch],
-  );
+  const onEdgesChange = (changes: EdgeChange<CanvasEdge>[]) =>
+    action.changeEdge(changes);
 
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      dispatch({
-        type: "CREATE_EDGE",
-        payload: connection,
-      });
-    },
-    [dispatch],
-  );
+  const onEdgesDelete = (edge: CanvasEdge[]) =>
+    edge.forEach((edge) => action.deleteEdge(edge.id));
 
-  const isValidConnection = (edgeOrConnection: Connection | Edge) => {
-    const { source, target, targetHandle } = edgeOrConnection;
+  const isValidConnection = useCallback(
+    (edgeOrConnection: Connection | Edge) => {
+      const { source, target, targetHandle } = edgeOrConnection;
 
-    if (source === target) return false;
+      if (source === target) return false;
 
-    // Hinders multiple edges between 2 nodes
-    const hasNodePairDuplicate = state.edges.some(
-      (e) => e.source === source && e.target === target,
-    );
-    if (hasNodePairDuplicate) return false;
-
-    // Handle's isConnectable only controls direct UI interaction, it doesn't account for graph state or connection limits.
-    if (targetHandle) {
-      const targetConnections = state.edges.filter(
-        (e) => e.target === target && e.targetHandle === targetHandle,
+      // Hinders multiple edges between 2 nodes
+      const hasNodePairDuplicate = state.edges.some(
+        (e) => e.source === source && e.target === target,
       );
+      if (hasNodePairDuplicate) return false;
 
-      if (targetConnections.length >= handleConfig.MAX_CONNECTIONS)
-        return false;
-    }
+      // Handle's isConnectable only controls direct UI interaction, it doesn't account for graph state or connection limits.
+      if (targetHandle) {
+        const targetConnections = state.edges.filter(
+          (e) => e.target === target && e.targetHandle === targetHandle,
+        );
 
-    const sourceNode = getNode(source);
-    const targetNode = getNode(target);
+        if (targetConnections.length >= handleConfig.MAX_CONNECTIONS)
+          return false;
+      }
 
-    if (!targetNode || !sourceNode) return false;
+      const sourceNode = getNode(source);
+      const targetNode = getNode(target);
 
-    // Hinders Node A -> Node B -> Node C -> Node A
-    const edges = state.edges;
-    const nodes = state.nodes;
+      if (!targetNode || !sourceNode) return false;
 
-    const hasCycle = (node: Node, visited = new Set<string>()): boolean => {
-      if (visited.has(node.id)) return false;
-      visited.add(node.id);
+      // Hinders Node A -> Node B -> Node C -> Node A
+      const edges = state.edges;
+      const nodes = state.nodes;
 
-      if (node.id === source) return true;
+      const hasCycle = (node: Node, visited = new Set<string>()): boolean => {
+        if (visited.has(node.id)) return false;
+        visited.add(node.id);
 
-      const outgoers = getOutgoers(node, nodes, edges);
-      return outgoers.some((outgoer) => hasCycle(outgoer, visited));
-    };
+        if (node.id === source) return true;
 
-    return !hasCycle(targetNode);
-  };
+        const outgoers = getOutgoers(node, nodes, edges);
+        return outgoers.some((outgoer) => hasCycle(outgoer, visited));
+      };
+
+      return !hasCycle(targetNode);
+    },
+    [state.nodes, state.edges, getNode],
+  );
 
   return (
     <ReactFlow
@@ -164,10 +130,6 @@ export function Canvas() {
         variant={BackgroundVariant.Cross}
         gap={40}
       />
-
-      <span className="absolute top-10 left-10 text-2xl text-red-500">
-        {abc.error}
-      </span>
     </ReactFlow>
   );
 }

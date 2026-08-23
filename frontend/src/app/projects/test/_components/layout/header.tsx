@@ -36,36 +36,18 @@ export type ToolbarItem = {
 };
 
 export function Header() {
-  const { mutate, cancelExecution, state: executorState } = useExecutor();
+  const { run, cancel, state: executorState } = useExecutor();
 
   const { state: editorState } = useEditor();
 
   const { getNode } = useReactFlow();
-
-  const startAt =
-    editorState.edges.find((edge) => getNode(edge.source)?.type === "START")
-      ?.target ?? "";
-
-  const nodes = editorState.nodes.filter((node) => node.type !== "START");
-
-  const edges = editorState.edges.filter(
-    (edge) => getNode(edge.source)?.type !== "START",
-  );
-
-  const execute = () => {
-    const request: ExecutionRequest = { nodes, edges, startAt };
-
-    console.log(request);
-
-    mutate(request);
-  };
 
   const stop = () => {
     const executionId = executorState.id;
 
     if (!executionId) return;
 
-    cancelExecution.mutate(executionId);
+    cancel(executionId);
   };
 
   const status = executorState.status;
@@ -80,11 +62,7 @@ export function Header() {
         <Redo size={20} />
       </Button>
 
-      <Button
-        onClick={status === "RUNNING" ? stop : execute}
-        size="icon"
-        aria-label="w"
-      >
+      <Button size="icon" aria-label="w">
         {status === "RUNNING" ? <Square size={20} /> : <Play size={20} />}
       </Button>
     </div>

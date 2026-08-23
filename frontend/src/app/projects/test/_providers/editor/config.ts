@@ -1,9 +1,6 @@
 import { Connection, EdgeChange, NodeChange, NodeTypes } from "@xyflow/react";
 
-import {
-  CanvasEdge,
-  EdgeStatus,
-} from "@/app/projects/test/_components/canvas/edges/config";
+import { CanvasEdge, EdgeStatus } from "@/app/projects/test/_components/canvas/edges/config";
 import { ToolboxItem } from "@/app/projects/test/_components/layout/toolbox";
 import {
   HttpRequest,
@@ -16,15 +13,8 @@ import {
 import { HttpRequestNode } from "@/app/projects/test/_components/canvas/nodes/core/http-request/node";
 import { DatabaseNode } from "@/app/projects/test/_components/canvas/nodes/core/database/node";
 
-export type CreateNode<T> = T extends CanvasNode ? Omit<T, "id"> : never;
-
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-};
-
-export type EditorContextValue = {
-  state: InitialEditor;
-  dispatch: React.Dispatch<ActionEditor>;
 };
 
 export type NodeData = HttpRequestData | DatabaseData;
@@ -48,12 +38,12 @@ export type ActionEditor =
       payload: ToolboxItem["id"];
     }
   | {
-      type: "MODIFY_BADGE";
-      payload: { method: "CREATE" | "DELETE"; nodeId: string; badge: string };
+      type: "SET_BADGE";
+      payload: { nodeId: string; method: "CREATE" | "DELETE"; badge: string };
     }
   | {
       type: "CREATE_NODE";
-      payload: CreateNode<CanvasNode>;
+      payload: CanvasNode["type"];
     }
   | {
       type: "CHANGE_NODE";

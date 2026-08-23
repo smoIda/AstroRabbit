@@ -15,7 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { Properties } from "@/app/projects/test/_components/layout/properties";
+import { QuickActions } from "@/app/projects/test/_components/layout/quick-actions";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 import {
   NodeStatus,
@@ -31,7 +31,6 @@ import { Badge } from "@/components/ui/primitives/badge";
 import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
-import { ExecutionRequest } from "@/lib/api/executor";
 
 const STATUS_ICONS: Record<NodeStatus, LucideIcon> = {
   IDLE: SquareDashed,
@@ -99,17 +98,11 @@ export function BaseNode(props: BaseNode) {
   const NodeIcon = props.data.icon;
   const StatusIcon = STATUS_ICONS[props.data.runtime.status];
 
-  const { state: editorState, dispatch: editorDispatch } = useEditor();
-  const { inProgress } = useConnection(); // Detects edges dragging
-  const {
-    state: executionState,
-    skipNodeExecution,
-    mutate: Execute,
-  } = useExecutor();
+  const editor = useEditor();
+  const executor = useExecutor();
 
-  const selectedCount = useStore(
-    (s) => s.nodes.filter((node) => node.selected).length,
-  );
+  const { inProgress } = useConnection(); // Detects edges dragging
+  const selectedCount = useStore((s) => s.nodes.filter((node) => node.selected).length);
 
   function formatDuration(duration: number) {
     if (!Number.isFinite(duration) || duration <= 0) return "--";
@@ -119,30 +112,6 @@ export function BaseNode(props: BaseNode) {
     return `${duration.toFixed(2)}\u00A0s`;
   }
 
-  const start = (startAt: string) => {
-    const nodes = editorState.nodes.filter(
-      (node) =>
-        node.id === startAt ||
-        editorState.edges.some(
-          (edge) => edge.source === node.id || edge.target === node.id,
-        ),
-    );
-
-    const edges = editorState.edges;
-
-    const request: ExecutionRequest = { nodes, edges, startAt };
-
-    console.log(request);
-
-    Execute(request);
-  };
-
-  const skip = (executionId: string, nodeId: string) => {
-    if (!nodeId || !executionId) return;
-
-    skipNodeExecution.mutate({ executionId, nodeId });
-  };
-
   return (
     <>
       <NodeToolbar
@@ -150,17 +119,13 @@ export function BaseNode(props: BaseNode) {
         position={Position.Top}
         offset={16}
       >
-        <Properties {...props} />
+        <QuickActions {...props} />
       </NodeToolbar>
 
       <div className="w-full">
         <span>{props.id}</span>
         <Button
-          onClick={() => {
-            if (!props.id) return;
-
-            start(props.id);
-          }}
+          onClick={() => executor.run(props.id)}
           size="icon"
           aria-label="Run"
           variant="no-brackets"
@@ -170,11 +135,7 @@ export function BaseNode(props: BaseNode) {
 
         {props.data.runtime.status === "RUNNING" && (
           <Button
-            onClick={() => {
-              if (!executionState.id) return;
-
-              skip(executionState.id, props.id);
-            }}
+            onClick={() => executor.skip(props.id)}
             className="nopan nodrag bg-accent-ink absolute -top-6 right-0 px-1"
             variant="no-brackets"
           >
@@ -190,10 +151,7 @@ export function BaseNode(props: BaseNode) {
           props.className,
         )}
       >
-        <Bracket
-          className="bg-accent-ink top-0.5 right-0.5 size-8"
-          position="top-right"
-        />
+        <Bracket className="bg-accent-ink top-0.5 right-0.5 size-8" position="top-right" />
 
         <div className="flex w-full items-center gap-x-4 px-4 py-2">
           <div className="relative flex size-8 shrink-0 items-center justify-center">
@@ -223,9 +181,7 @@ export function BaseNode(props: BaseNode) {
               className="nowheel flex w-full scrollbar-none items-center gap-x-2 overflow-x-auto"
             >
               <Badge key={`${props.id}-badge`} color="accent-soft">
-                {props.type
-                  .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-                  .replace(/_/g, " ")}
+                {props.type.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ")}
               </Badge>
 
               {props.data.badge.length > 0 &&
@@ -236,23 +192,12 @@ export function BaseNode(props: BaseNode) {
                       onClick={(e) => {
                         e.stopPropagation();
 
-                        editorDispatch({
-                          type: "MODIFY_BADGE",
-                          payload: {
-                            method: "DELETE",
-                            nodeId: props.id,
-                            badge: badge,
-                          },
-                        });
+                        editor.action.setBadge(props.id, "DELETE", badge);
                       }}
                       variant="no-brackets"
                       className="nodrag nopan group/badge"
                     >
-                      <Badge
-                        title={badge}
-                        className="group-hover/badge:opacity-30"
-                        color="accent"
-                      >
+                      <Badge title={badge} className="group-hover/badge:opacity-30" color="accent">
                         {badge}
                       </Badge>
 
@@ -275,10 +220,7 @@ export function BaseNode(props: BaseNode) {
                 size="icon"
                 className="nodrag nopan"
               >
-                <PlusSquare
-                  size={16}
-                  className="stroke-ink-soft active:bg-accent-ink"
-                />
+                <PlusSquare size={16} className="stroke-ink-soft active:bg-accent-ink" />
               </Button>
             </div>
           </div>
@@ -304,29 +246,16 @@ export function BaseNode(props: BaseNode) {
                   ];
 
                 return (
-                  <div
-                    key={key}
-                    className="flex w-full items-center justify-between"
-                  >
+                  <div key={key} className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-x-2">
-                      {Icon && (
-                        <Icon
-                          size={12}
-                          strokeWidth={2}
-                          className="stroke-ink-soft/60"
-                        />
-                      )}
+                      {Icon && <Icon size={12} strokeWidth={2} className="stroke-ink-soft/60" />}
                       <span className="text-xs font-semibold uppercase">
-                        {key
-                          .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-                          .replace(/_/g, " ")}
+                        {key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ")}
                       </span>
                     </div>
 
                     <span className="w-40 truncate text-right text-xs">
-                      {typeof value === "object"
-                        ? JSON.stringify(value)
-                        : value}
+                      {typeof value === "object" ? JSON.stringify(value) : value}
                     </span>
                   </div>
                 );

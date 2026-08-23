@@ -4,18 +4,11 @@ import { useEffect } from "react";
 
 import { LucideIcon, MousePointer2, Plus } from "lucide-react";
 
-import {
-  CanvasNode,
-  CreateNode,
-  InitialEditor,
-} from "@/app/projects/test/_providers/editor/config";
+import { CanvasNode, InitialEditor } from "@/app/projects/test/_providers/editor/config";
+import { SETTINGS } from "@/app/projects/test/_components/canvas/config";
 import { useEditor } from "@/app/projects/test/_hooks/use-editor";
 
 import { Button } from "@/components/ui/primitives/button";
-import {
-  NODE_DEFAULTS,
-  SETTINGS,
-} from "@/app/projects/test/_components/canvas/config";
 
 const toolboxItems: ToolboxItem[] = [
   {
@@ -52,16 +45,9 @@ function validate(type: CanvasNode["type"], nodes: InitialEditor["nodes"]) {
 }
 
 // Unprovable typescript issue but the correlation is real omfg
-function create<T extends CanvasNode>(type: T["type"]): CreateNode<T> {
-  return {
-    type,
-    position: { x: Math.random(), y: Math.random() },
-    data: NODE_DEFAULTS[type],
-  } as CreateNode<T>;
-}
 
 export function Toolbox() {
-  const { state, dispatch } = useEditor();
+  const editor = useEditor();
 
   useEffect(() => {
     const handleInsert = (e: KeyboardEvent) => {
@@ -80,18 +66,15 @@ export function Toolbox() {
           return;
       }
 
-      if (!validate(type, state.nodes)) return;
+      if (!validate(type, editor.state.nodes)) return;
 
-      dispatch({
-        type: "CREATE_NODE",
-        payload: create(type),
-      });
+      editor.action.createNode("HTTP_REQUEST");
     };
 
     window.addEventListener("keydown", handleInsert);
 
     return () => window.removeEventListener("keydown", handleInsert);
-  }, [state.nodes]);
+  }, [editor.state.nodes]);
 
   return (
     <div className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-4">
@@ -100,7 +83,7 @@ export function Toolbox() {
 
         return (
           <Button
-            onClick={() => dispatch({ type: "SELECT_TOOL", payload: item.id })}
+            onClick={() => editor.action.selectTool(item.id)}
             key={item.id}
             size="icon"
             aria-label={item.id}

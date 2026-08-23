@@ -1,22 +1,3 @@
-import { UseMutationResult } from "@tanstack/react-query";
-
-import { ExecutionRequest } from "@/lib/api/executor";
-
-export type ExecutorContextValue = UseMutationResult<
-  string,
-  Error,
-  ExecutionRequest
-> & {
-  cancelExecution: UseMutationResult<string, Error, string>;
-  skipNodeExecution: UseMutationResult<
-    string,
-    Error,
-    { executionId: string; nodeId: string }
-  >;
-  state: InitialExecutor;
-  dispatch: React.Dispatch<ActionExecutor>;
-};
-
 export type ExecutionStatus =
   "IDLE" | "RUNNING" | "SUCCESS" | "CANCELLED" | "ERROR";
 

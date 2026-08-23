@@ -1,7 +1,9 @@
 import { useContext } from "react";
 
-import { EditorContext } from "@/app/projects/test/_providers/editor/provider";
-import { EditorContextValue } from "@/app/projects/test/_providers/editor/config";
+import {
+  EditorContext,
+  EditorContextValue,
+} from "@/app/projects/test/_providers/editor/provider";
 
 export function useEditor(): EditorContextValue {
   const context = useContext(EditorContext);

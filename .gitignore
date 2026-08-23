@@ -35,6 +35,7 @@ frontend/out/
 frontend/build/
 frontend/dist/
 frontend/coverage/
+frontend/src/scrapped
 
 # Yarn / Package Manager Artifacts
 .pnp

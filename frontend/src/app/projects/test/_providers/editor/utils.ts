@@ -1,24 +1,24 @@
+import { NODE_DEFAULTS } from "@/app/projects/test/_components/canvas/config";
 import {
   CanvasNode,
   DeepPartial,
 } from "@/app/projects/test/_providers/editor/config";
 
-export function modifyNodeData<T extends CanvasNode>(
-  node: T,
-  data: DeepPartial<T["data"]>,
-): T {
+type CreateNode<T> = T extends CanvasNode ? Omit<T, "id"> : never;
+
+export function createNode<T extends CanvasNode>(
+  type: T["type"],
+): CreateNode<T> {
   return {
-    ...node,
-    data: {
-      ...node.data,
-      ...data,
-    },
-  };
+    type,
+    position: { x: Math.random(), y: Math.random() },
+    data: NODE_DEFAULTS[type],
+  } as CreateNode<T>;
 }
 
-export function modifyNodeBadge<T extends CanvasNode>(
-  method: "CREATE" | "DELETE",
+export function setBadge<T extends CanvasNode>(
   node: T,
+  method: "CREATE" | "DELETE",
   badge: string,
 ): T {
   switch (method) {
@@ -49,4 +49,17 @@ export function modifyNodeBadge<T extends CanvasNode>(
     default:
       return node;
   }
+}
+
+export function updateData<T extends CanvasNode>(
+  node: T,
+  data: DeepPartial<T["data"]>,
+): T {
+  return {
+    ...node,
+    data: {
+      ...node.data,
+      ...data,
+    },
+  };
 }
