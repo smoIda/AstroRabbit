@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response, status
 from fastapi.responses import StreamingResponse
 
 
@@ -34,7 +34,9 @@ async def stream_execution(execution_id: str):
     queue = execution_manager.get_queue(execution_id)
 
     if queue is None:
-        raise HTTPException(status_code=404, detail="Execution ID not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Execution ID not found"
+        )
 
     async def event_generator():
         try:
@@ -46,9 +48,9 @@ async def stream_execution(execution_id: str):
                 yield f"data: {payload}\n\n"
 
                 if event.type in {
-                    "EXECUTION_FINISHED",
-                    "EXECUTION_CANCELLED",
+                    "EXECUTION_SUCCESS",
                     "EXECUTION_ERROR",
+                    "EXECUTION_ABORTED",
                 }:
                     break
 
@@ -63,19 +65,24 @@ async def stream_execution(execution_id: str):
     )
 
 
-@router.post("/{execution_id}/cancel")
-async def cancel_execution(execution_id: str):
+@router.post("/{execution_id}/abort")
+async def abort_execution(execution_id: str):
     task = execution_manager.get_task(execution_id)
 
     if task is None:
-        raise HTTPException(status_code=404, detail="Execution ID not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Execution ID not found"
+        )
 
     if task.done():
-        return {"status": "Specified execution ID has already finished"}
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Specified execution has already finished",
+        )
 
     task.cancel()
 
-    return {"status": "Cancellation requested"}
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/{execution_id}/nodes/{node_id}/skip")
@@ -92,4 +99,4 @@ async def skip_node_execution(execution_id: str, node_id: str):
 
     skip_event.set()
 
-    return {"status": f"{node_id} in {execution_id} is skipped"}
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

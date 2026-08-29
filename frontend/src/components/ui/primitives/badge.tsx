@@ -15,11 +15,9 @@ const styles = cva(
         black: "border-ink text-ink bg-ink/5",
         "black-soft": "border-ink-soft text-ink-soft bg-ink-soft/5",
         white: "border-white-ink text-white-ink bg-white-ink/5",
-        "white-soft":
-          "border-white-ink-soft text-white-ink-soft bg-white-ink-soft/5",
+        "white-soft": "border-white-ink-soft text-white-ink-soft bg-white-ink-soft/5",
         accent: "border-accent-ink text-accent-ink bg-accent-ink/5",
-        "accent-soft":
-          "border-accent-ink-soft text-accent-ink-soft bg-accent-ink-soft/5",
+        "accent-soft": "border-accent-ink-soft text-accent-ink-soft bg-accent-ink-soft/5",
       },
     },
 
@@ -30,16 +28,11 @@ const styles = cva(
 );
 
 type Badge = React.ComponentPropsWithoutRef<"span"> &
-  VariantProps<typeof styles>;
+  VariantProps<typeof styles> & {
+    children: React.ReactNode;
+  };
 
-export function Badge({
-  children,
-  color = "black",
-  size,
-  style,
-  className,
-  ...props
-}: Badge) {
+export function Badge({ children, color = "black", size, style, className, ...props }: Badge) {
   return (
     <span
       className={cn(

@@ -24,16 +24,14 @@ type Shadow = Omit<React.ComponentPropsWithoutRef<"span">, "children"> &
     opacity?: number;
   };
 
-export function Shadow(props: Shadow) {
-  const {
-    color,
-    spread = 16,
-    opacity = 40,
-    style,
-    className,
-    ...shadowProps
-  } = props;
-
+export function Shadow({
+  color,
+  spread = 16,
+  opacity = 40,
+  style,
+  className,
+  ...props
+}: Shadow) {
   return (
     <div
       style={
@@ -44,7 +42,7 @@ export function Shadow(props: Shadow) {
         } as React.CSSProperties
       }
       className={cn(styles({ color, className }))}
-      {...shadowProps}
+      {...props}
     />
   );
 }

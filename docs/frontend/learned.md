@@ -1,111 +1,69 @@
-# Preserving Discriminated Union Types
+# Lifecycle invariant
 
 ## Problem
 
-Updating a shared property on `NodeData: HttpRequest | Database` caused TypeScript to lose the specific union member when reconstructing the node. Although both variants contain runtime, reconstructing the object with object spreads can make TypeScript lose the relationship between them.
+The SSE stream would freeze halfway through an execution. There were no logs, warnings, or errors indicating what went wrong, the browser would simply stop receiving events.
 
-## Solution
+The backend was healthy, and the SSE endpoint returned 200 OK in the network tab. Even stranger, the execution appeared to stop at a random node and at a random point in time. There seemed to be no consistent pattern that could identify the source of the problem.
 
-Use a generic constrained to `NodeData` and return the same type:
+## Cause
 
-```ts
-function _<T extends NodeData>(node: T, payload: Data): T {
-    return {
-        ...node,
-        data: {
-            ...node.data,
-            payload,
-        },
-    };
-}
-```
+When I was refactoring my code, I moved the stream and the engine, originally in `ExecutorProvider`, to dedicated hooks. After that, I started working on the node execution,
 
-# Preserving Discriminated Union Types (PT.2)
+## Fix
 
-## Problem
+My first assumption was the backend. I checked the execution service and found nothing wrong.
 
-When a function receives a discriminated union and returns different types depending on the discriminator, a **generic** does not automatically preserve the relationship between the input discriminator and the output type.
+Next, I investigated the SSE connection. The `/events` request returned **200 OK**, so I initially had no reason to suspect the stream itself.
 
-For example:
+I then investigated the related frontend possibilities: `useStream`, `useEngine`, state synchronization, stale state, and the recent refactor that had moved the engine and stream logic out of `ExecutorProvider` and into dedicated hooks.
 
-```ts
-type Action =
-    | {
-          type: "EXECUTION";
-          status: ExecutionStatus;
-      }
-    | {
-          type: "STREAM";
-          error?: string | null;
-      }
-    | {
-          type: "NODE";
-          id: string;
-          status: NodeStatus;
-      }
-    | {
-          type: "EDGE";
-          id: string;
-          status: EdgeStatus;
-      };
-```
+I even temporarily moved `useEngine` back into `ExecutorProvider`, suspecting that the refactor had introduced a lifecycle or state-management problem. At one point, I considered creating a dedicated `EngineProvider` just to isolate whether state ownership was the issue, but I did not do that because I genuinely thought there was something deeper than the lifecycle.
 
-The desired relationship is **EXECUTION / STREAM** -> `ActionExecutor` and **NODE / EDGE** -> `ActionEditor`
+I added console.log and backend print statements everywhere I could think of. And, of course, everything worked flawlessly while I was watching it.
 
-A generic such as:
+The breakthrough came when I was researching on the Internet:
 
-```ts
-function _<T extends ActionExecutor | ActionEditor>(props: Action): T;
-```
+> Who owns the engine?
 
-does not establish this relationship. T is independent of props, so the caller could theoretically request an ActionEditor while providing an "EXECUTION" action.
+That immediately made me inspect the node hotbar, the component responsible for initiating execution, and there it was.
 
-_The important distinction is that the generic does not describe a relationship between the input and output._
+## Realization
 
-## Solution
+The execution itself was not nondeterministic. The actual sequence was:
 
-Use function overloads when there is a small, finite set of predefined input - output relationships.
+    Execution starts
+    ↓
+    I changes node selection
+    ↓
+    Hotbar unmounts
+    ↓
+    Hotbar cleanup runs
+    ↓
+    SSE connection is cleaned up
+    ↓
+    Frontend stops receiving execution events
+    ↓
+    Execution appears to stop at a random node while the backend finished the execution, exited with no issues
 
-```ts
-function _(
-  props: Extract<Action, { type: "EXECUTION" | "STREAM" }>,
-): ActionExecutor;
+The apparent randomness came from when _the node selection changed_, not from _the execution engine_. The hotbar owned part of the execution lifecycle, but its own component lifecycle was shorter than the execution lifecycle. When the component unmounted, its cleanup logic ran and unintentionally terminated something that was still needed by the ongoing execution.
 
+## Lesson
 
-function _(
-  props: Extract<Action, { type: "NODE" | "EDGE" }>,
-): ActionEditor;
+The SSE request returning _200 OK_ only proved that the connection was successfully established. It did not guarantee that the connection would remain alive for the entire execution. I was checking whether each individual piece worked, but I wasn't checking whether their _lifetimes_ were compatible.
 
+When debugging an asynchronous system, ask who owns each resource, when that owner can disappear, and what happens during cleanup. For any long-running operation, I should explicitly consider:
 
-function _(props: Action): ActionExecutor | ActionEditor {
-  ...
-}
-```
+- Who creates it?
+- Who owns it?
+- How long is it supposed to live?
+- What causes its owner to unmount or disappear?
+- What does its cleanup function do?
+- Can that cleanup happen while the operation is still running?
+- Is the resource lifecycle longer than the component lifecycle?
 
-# Event differentiation
+A component being responsible for starting an execution does not necessarily mean it should be responsible for owning the execution.
 
-## Problem
+This bug also changed how I think about *random failures*. When an asynchronous process appears to stop at random points, I should not immediately assume the process itself is nondeterministic. 
 
-Attempted to cut down boilerplate lines with string splitting:
-
-```ts
-const [type, status] = event.type.split("_") as ["EXECUTION" | "NODE" | "EDGE", "STARTED" | "FINISHED" | "CANCELLED" | "ERROR"]
-
-switch (type):
-    case "EXECUTION": ...
-    case "NODE": ...
-    case "EDGE": ...
-```
-
-## Why it didn't work and was reverted to an explicit switch
-
-- Action verbs "STARTED" do not map 1:1 to state statuses "RUNNING"
-  -> If/Else til I die
-- EDGE types strictly accept either "STARTED" or "FINISHED" statuses
-  -> Unable/Difficult to preserve TypeScript's discriminated union type narrowing without requiring unsafe type assertions.
-- Events require distinct side-effects, for example, "EXECUTION_ERROR` dispatches stream failure alerts, while "NODE_FINISHED" records execution duration.
-  -> Asymmetrical payloads
-
-## Conclusion
-
-Clear explicit code is better than implicit DRY code when business logic branches off.
+-> The apparent randomness may come from an external lifecycle event.

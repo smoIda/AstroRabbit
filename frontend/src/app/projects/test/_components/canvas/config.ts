@@ -1,9 +1,6 @@
-import { Database, Globe, Zap } from "lucide-react";
+import { Database, Globe } from "lucide-react";
 
-import {
-  CanvasNode,
-  NodeData,
-} from "@/app/projects/test/_providers/editor/config";
+import { CanvasNode } from "@/app/projects/test/_providers/editor/config";
 
 export const SETTINGS: Record<
   CanvasNode["type"],
@@ -28,10 +25,11 @@ export const NODE_DEFAULTS: {
   HTTP_REQUEST: {
     label: "HTTP Request Node",
     icon: Globe,
-    provider: "CUSTOM_API",
     badge: [],
 
     config: {
+      provider: "CUSTOM_API",
+
       headers: {
         "Content-type": "application/json",
       },

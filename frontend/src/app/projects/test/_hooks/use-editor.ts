@@ -1,14 +1,24 @@
 import { useContext } from "react";
 
 import {
-  EditorContext,
-  EditorContextValue,
+  EditorActionContext,
+  EditorActionContextValue,
+  EditorStateContext,
+  EditorStateContextValue,
 } from "@/app/projects/test/_providers/editor/provider";
 
-export function useEditor(): EditorContextValue {
-  const context = useContext(EditorContext);
+export function useEditorState(): EditorStateContextValue {
+  const context = useContext(EditorStateContext);
 
-  if (!context) throw new Error("useEditor must be inside EditorProvider");
+  if (!context) throw new Error("useEditorState must be inside EditorProvider");
+
+  return context;
+}
+
+export function useEditorAction(): EditorActionContextValue {
+  const context = useContext(EditorActionContext);
+
+  if (!context) throw new Error("useEditorAction must be inside EditorProvider");
 
   return context;
 }

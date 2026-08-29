@@ -3,34 +3,36 @@ import random
 
 import httpx
 
+from fastapi import status
+
 from astrorabbit.config.executor import MAX_HTTP_TIMEOUT
 from astrorabbit.schemas.executor import NodeResult
 from astrorabbit.schemas.node_schemas.http_request import (
-    HttpCustomData,
-    HttpMockData,
+    HttpMockConfig,
+    HttpCustomConfig,
     HttpRequestNode,
     HttpRequestOutput,
 )
 
 
-async def execute_mock_request(data: HttpMockData) -> NodeResult[HttpRequestOutput]:
-    await asyncio.sleep(data.config.latency)
+async def execute_mock_request(config: HttpMockConfig) -> NodeResult[HttpRequestOutput]:
+    await asyncio.sleep(config.latency)
 
     gamble = random.choices(
         ["SUCCESS", "FAIL"],
-        weights=[100 - data.config.failure_rate, data.config.failure_rate],
+        weights=[100 - config.failure_rate, config.failure_rate],
         k=1,
     )[0]
 
-    success = gamble == "SUCCESS" and 200 <= data.config.status_code < 300
+    success = gamble == "SUCCESS" and 200 <= config.status_code < 300
 
     return NodeResult(
         success=success,
         output=HttpRequestOutput(
-            status_code=data.config.status_code,
+            status_code=config.status_code,
             body={
                 "message:": "Hello from Mock API",
-                "latency:": data.config.latency,
+                "latency:": config.latency,
                 "rolled:": gamble,
             },
         ),
@@ -38,30 +40,53 @@ async def execute_mock_request(data: HttpMockData) -> NodeResult[HttpRequestOutp
 
 
 async def execute_custom_request(
-    data: HttpCustomData,
+    config: HttpCustomConfig,
 ) -> NodeResult[HttpRequestOutput]:
     async with httpx.AsyncClient() as client:
         # https://httpbingo.org/get - SUCCESS
         # https://httpbingo.org/status/500 - ERROR, STATUS 500
         # https://httpbingo.org/delay/10 - ERROR, TIME OUT
-        response = await client.get(data.config.url, timeout=MAX_HTTP_TIMEOUT)
 
-        response.raise_for_status()
+        try:
+            response = await client.get(config.url, timeout=MAX_HTTP_TIMEOUT)
+        except httpx.TimeoutException:
+            return NodeResult(
+                success=False,
+                output=HttpRequestOutput(
+                    status_code=status.HTTP_408_REQUEST_TIMEOUT,
+                    body={"error": "Request timed out"},
+                ),
+            )
+        except httpx.RequestError as err:
+            return NodeResult(
+                success=False,
+                output=HttpRequestOutput(
+                    status_code=status.HTTP_502_BAD_GATEWAY, body={"error": str(err)}
+                ),
+            )
 
-        return NodeResult(
-            success=True,
-            output=HttpRequestOutput(
-                status_code=response.status_code,
-                body=response.json(),
-            ),
-        )
+    try:
+        body = response.json()
+    except ValueError:
+        body = {"raw": response.text}
+
+    return NodeResult(
+        success=response.is_success,
+        output=HttpRequestOutput(
+            status_code=response.status_code,
+            headers=dict(response.headers),
+            body=body,
+        ),
+    )
 
 
 async def execute_request(node: HttpRequestNode) -> NodeResult[HttpRequestOutput]:
-    match node.data:
-        case HttpMockData():
-            return await execute_mock_request(node.data)
-        case HttpCustomData():
-            return await execute_custom_request(node.data)
+    config = node.data.config
+
+    match config.provider:
+        case "MOCK_API":
+            return await execute_mock_request(config)
+        case "CUSTOM_API":
+            return await execute_custom_request(config)
         case _:
             raise ValueError(f"Unsupported HTTP provider: {node.data.provider}")

@@ -1,5 +1,4 @@
-import { CanvasNode } from "@/app/projects/test/_providers/editor/config";
-import { CanvasEdge } from "@/app/projects/test/_components/canvas/edges/config";
+import { CanvasEdge, CanvasNode } from "@/app/projects/test/_providers/editor/config";
 
 import { API_URL } from "@/hooks/config";
 
@@ -9,9 +8,7 @@ export type ExecutionRequest = {
   startAt: string;
 };
 
-export async function executeProgram(
-  request: ExecutionRequest,
-): Promise<string> {
+export async function executeProgram(request: ExecutionRequest): Promise<string> {
   const res = await fetch(`${API_URL}/executor`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
@@ -25,13 +22,13 @@ export async function executeProgram(
   return data.executionId;
 }
 
-export async function cancelProgram(executionId: string): Promise<string> {
-  const res = await fetch(`${API_URL}/executor/${executionId}/cancel`, {
+export async function abortProgram(executionId: string): Promise<string> {
+  const res = await fetch(`${API_URL}/executor/${executionId}/abort`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
   });
 
-  if (!res.ok) throw new Error("Failed to cancel program");
+  if (!res.ok) throw new Error("Failed to abort program");
 
   return res.json();
 }
@@ -43,18 +40,12 @@ export async function skipNode({
   executionId: string;
   nodeId: string;
 }): Promise<string> {
-  const res = await fetch(
-    `${API_URL}/executor/${executionId}/nodes/${nodeId}/skip`,
-    {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-    },
-  );
+  const res = await fetch(`${API_URL}/executor/${executionId}/nodes/${nodeId}/skip`, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+  });
 
-  if (!res.ok)
-    throw new Error(
-      `Failed to skip node id: ${nodeId} at execution id: ${executionId}`,
-    );
+  if (!res.ok) throw new Error(`Failed to skip node id: ${nodeId} at execution id: ${executionId}`);
 
   return res.json();
 }

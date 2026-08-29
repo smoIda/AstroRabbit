@@ -1,44 +1,62 @@
 import { Node } from "@xyflow/react";
 
+import z from "zod";
+
 import { Base } from "@/app/projects/test/_components/canvas/nodes/base/config";
+import { withMeta } from "@/app/projects/test/_components/canvas/utils";
 
-export type HttpMockData = Base & {
-  provider: "MOCK_API";
+const HTTP_METHOD = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
-  config: {
-    headers: Record<string, string>;
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-    body: string;
-    latency: number;
-    statusCode: number;
-    failureRate: number;
-  };
+const mockConfig = z.object({
+  provider: z.literal("MOCK_API"),
 
-  output: {
-    statusCode: number;
-    headers: Record<string, string>;
-    body: unknown;
-  };
-};
+  headers: z.record(z.string(), z.string()),
+  method: z.enum(HTTP_METHOD),
+  body: z.json(),
+  latency: z.number().min(0).max(10).default(0),
+  statusCode: z.number().min(100).max(599).default(200),
+  failureRate: z.number().min(0).max(100).default(0),
+});
 
-export type HttpCustomData = Base & {
-  provider: "CUSTOM_API";
+const mockOutput = z.object({
+  statusCode: z.number().min(100).max(599),
+  headers: z.record(z.string(), z.string()),
+  body: z.unknown(),
+});
 
-  config: {
-    headers: Record<string, string>;
-    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-    body: string;
-    url: string;
-  };
+export type HttpMockData = Base<z.infer<typeof mockConfig>, z.infer<typeof mockOutput>>;
 
-  output: {
-    statusCode: number;
-    headers: Record<string, string>;
-    body: unknown;
-  };
-};
+const customConfig = z.object({
+  provider: withMeta(z.literal("CUSTOM_API"), { widget: "SELECT", hiddenOnNode: true }),
+
+  headers: withMeta(z.record(z.string(), z.string()), { widget: "RECORD" }),
+  method: withMeta(z.enum(HTTP_METHOD), { widget: "SELECT" }),
+  body: withMeta(z.json(), { widget: "JSON" }),
+  url: withMeta(z.url(), { widget: "TEXT" }),
+});
+
+const customOutput = z.object({
+  statusCode: z.number().min(100).max(599),
+  headers: z.record(z.string(), z.string()),
+  body: z.unknown(),
+});
+
+export type HttpCustomData = Base<z.infer<typeof customConfig>, z.infer<typeof customOutput>>;
+
+const httpConfig = z.discriminatedUnion("provider", [mockConfig, customConfig]);
+
+export const HTTP_REQUEST_SCHEMAS = {
+  MOCK_API: {
+    CONFIG: mockConfig,
+    OUTPUT: mockOutput,
+  },
+
+  CUSTOM_API: {
+    CONFIG: customConfig,
+    OUTPUT: customOutput,
+  },
+} as const;
 
 export type HttpRequestData = HttpMockData | HttpCustomData;
 
-export type HttpRequest =
-  Node<HttpMockData, "HTTP_REQUEST"> | Node<HttpCustomData, "HTTP_REQUEST">;
+export type HttpRequest = Node<HttpRequestData, "HTTP_REQUEST">;

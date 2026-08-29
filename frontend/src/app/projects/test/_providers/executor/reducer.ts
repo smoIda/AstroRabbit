@@ -21,7 +21,7 @@ export const actionExecutor = (state: InitialExecutor, action: ActionExecutor): 
         id: action.payload,
       };
 
-    case "SET_EXECUTOR":
+    case "PATCH_EXECUTOR":
       return {
         ...state,
         status: action.payload.status,

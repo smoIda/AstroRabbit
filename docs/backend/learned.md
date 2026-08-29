@@ -1,7 +1,5 @@
 # Recursive graph traversal bug
 
-*RESOLVED: 8/20/2026*
-
 ## Problem
 
 While implementing AstroRabbit's execution engine, I wanted edges to finish immediately after their destination node finished:

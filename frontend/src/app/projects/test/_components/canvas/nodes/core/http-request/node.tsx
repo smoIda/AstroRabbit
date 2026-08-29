@@ -1,14 +1,6 @@
 import { NodeProps } from "@xyflow/react";
 
-import {
-  ClockFading,
-  Code2,
-  FileText,
-  Hash,
-  Link2,
-  List,
-  TrendingDown,
-} from "lucide-react";
+import { ClockFading, Code2, FileText, Hash, Link2, List, TrendingDown } from "lucide-react";
 
 import { HttpRequest } from "@/app/projects/test/_components/canvas/nodes/core/http-request/config";
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/node";
@@ -26,11 +18,5 @@ const ICONS = {
 } as const;
 
 export function HttpRequestNode(node: NodeProps<HttpRequest>) {
-  return (
-    <BaseNode
-      {...node}
-      configIcons={ICONS}
-      handles={generateHandle(node.type)}
-    />
-  );
+  return <BaseNode {...node} configIcons={ICONS} handles={generateHandle(node.type)} />;
 }

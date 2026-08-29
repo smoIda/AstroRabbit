@@ -1,14 +1,9 @@
 import { NODE_DEFAULTS } from "@/app/projects/test/_components/canvas/config";
-import {
-  CanvasNode,
-  DeepPartial,
-} from "@/app/projects/test/_providers/editor/config";
+import { CanvasNode, CanvasEdge } from "@/app/projects/test/_providers/editor/config";
 
 type CreateNode<T> = T extends CanvasNode ? Omit<T, "id"> : never;
 
-export function createNode<T extends CanvasNode>(
-  type: T["type"],
-): CreateNode<T> {
+export function createNode<T extends CanvasNode>(type: T["type"]): CreateNode<T> {
   return {
     type,
     position: { x: Math.random(), y: Math.random() },
@@ -16,7 +11,7 @@ export function createNode<T extends CanvasNode>(
   } as CreateNode<T>;
 }
 
-export function setBadge<T extends CanvasNode>(
+export function patchBadge<T extends CanvasNode>(
   node: T,
   method: "CREATE" | "DELETE",
   badge: string,
@@ -28,11 +23,7 @@ export function setBadge<T extends CanvasNode>(
         data: {
           ...node.data,
           badge: Array.from(
-            new Set(
-              [...node.data.badge.map((b) => b.trim()), badge.trim()].filter(
-                Boolean,
-              ),
-            ),
+            new Set([...node.data.badge.map((b) => b.trim()), badge.trim()].filter(Boolean)),
           ),
         },
       };
@@ -51,15 +42,16 @@ export function setBadge<T extends CanvasNode>(
   }
 }
 
-export function updateData<T extends CanvasNode>(
+export function patchNode<T extends CanvasNode, K extends keyof T["data"]>(
   node: T,
-  data: DeepPartial<T["data"]>,
-): T {
-  return {
-    ...node,
-    data: {
-      ...node.data,
-      ...data,
-    },
-  };
+  patch: Pick<T["data"], K>,
+) {
+  return { ...node, data: { ...node.data, ...patch } };
+}
+
+export function patchEdge<T extends CanvasEdge, K extends keyof T["data"]>(
+  edge: T,
+  patch: Pick<T["data"], K>,
+) {
+  return { ...edge, data: { ...edge.data, ...patch } };
 }

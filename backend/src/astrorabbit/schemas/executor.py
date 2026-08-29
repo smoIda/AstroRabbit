@@ -38,13 +38,13 @@ class ExecutionSuccessEvent(BaseModel):
     type: Literal["EXECUTION_SUCCESS"] = "EXECUTION_SUCCESS"
 
 
-class ExecutionCancelledEvent(BaseModel):
-    type: Literal["EXECUTION_CANCELLED"] = "EXECUTION_CANCELLED"
-
-
 class ExecutionErrorEvent(BaseModel):
     type: Literal["EXECUTION_ERROR"] = "EXECUTION_ERROR"
     output: str | None = None
+
+
+class ExecutionAbortedEvent(BaseModel):
+    type: Literal["EXECUTION_ABORTED"] = "EXECUTION_ABORTED"
 
 
 class NodeStartedEvent(BaseModel):
@@ -80,7 +80,8 @@ class EdgeStartedEvent(BaseModel):
 class EdgeFinishedEvent(BaseModel):
     type: Literal["EDGE_FINISHED"] = "EDGE_FINISHED"
     edge_id: str = Field(serialization_alias="edgeId")
-    
+
+
 class EdgeSkippedEvent(BaseModel):
     type: Literal["EDGE_SKIPPED"] = "EDGE_SKIPPED"
     edge_id: str = Field(serialization_alias="edgeId")
@@ -90,7 +91,7 @@ ExecutionEvent = Annotated[
     ExecutionStartedEvent
     | ExecutionSuccessEvent
     | ExecutionErrorEvent
-    | ExecutionCancelledEvent
+    | ExecutionAbortedEvent
     | NodeStartedEvent
     | NodeSuccessEvent
     | NodeErrorEvent

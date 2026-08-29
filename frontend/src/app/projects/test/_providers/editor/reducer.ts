@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 
 import { addEdge, applyEdgeChanges, applyNodeChanges } from "@xyflow/react";
 
-import { CanvasEdge } from "@/app/projects/test/_components/canvas/edges/config";
+import { CanvasEdge } from "@/app/projects/test/_providers/editor/config";
 import {
   ActionEditor,
   CanvasNode,
@@ -10,8 +10,9 @@ import {
 } from "@/app/projects/test/_providers/editor/config";
 import {
   createNode,
-  setBadge,
-  updateData,
+  patchBadge,
+  patchEdge,
+  patchNode,
 } from "@/app/projects/test/_providers/editor/utils";
 
 export const initialEditor: InitialEditor = {
@@ -20,10 +21,7 @@ export const initialEditor: InitialEditor = {
   edges: [],
 };
 
-export const actionEditor = (
-  state: InitialEditor,
-  action: ActionEditor,
-): InitialEditor => {
+export const actionEditor = (state: InitialEditor, action: ActionEditor): InitialEditor => {
   switch (action.type) {
     case "SELECT_TOOL":
       return {
@@ -31,12 +29,12 @@ export const actionEditor = (
         tool: action.payload,
       };
 
-    case "SET_BADGE":
+    case "PATCH_BADGE":
       return {
         ...state,
         nodes: state.nodes.map((node) =>
           node.id === action.payload.nodeId
-            ? setBadge(node, action.payload.method, action.payload.badge)
+            ? patchBadge(node, action.payload.method, action.payload.badge)
             : node,
         ),
       };
@@ -60,14 +58,37 @@ export const actionEditor = (
       };
     }
 
-    case "SET_NODE":
+    case "PATCH_NODE_BRANDING":
       return {
         ...state,
         nodes: state.nodes.map((node) =>
           node.id === action.payload.id
-            ? updateData(node, action.payload.data)
+            ? patchNode(node, { label: action.payload.label, icon: action.payload.icon })
             : node,
         ),
+      };
+
+    case "PATCH_NODE_CONFIG":
+      return {
+        ...state,
+        nodes: state.nodes.map((node) =>
+          node.id === action.payload.id ? patchNode(node, { config: action.payload.config }) : node,
+        ),
+      };
+
+    case "PATCH_NODE_EXECUTION":
+      return {
+        ...state,
+        nodes: state.nodes.map((node) => {
+          if (node.id !== action.payload.id) return node;
+          if (action.payload.output !== undefined) {
+            return patchNode(node, {
+              runtime: action.payload.runtime,
+              output: action.payload.output,
+            });
+          }
+          return patchNode(node, { runtime: action.payload.runtime });
+        }),
       };
 
     case "DELETE_NODE":
@@ -95,19 +116,11 @@ export const actionEditor = (
         edges: applyEdgeChanges<CanvasEdge>(action.payload, state.edges),
       };
 
-    case "SET_EDGE":
+    case "PATCH_EDGE_EXECUTION":
       return {
         ...state,
         edges: state.edges.map((edge) =>
-          edge.id === action.payload.id
-            ? {
-                ...edge,
-                data: {
-                  ...edge.data,
-                  status: action.payload.status,
-                },
-              }
-            : edge,
+          edge.id === action.payload.id ? patchEdge(edge, { status: action.payload.status }) : edge,
         ),
       };
 

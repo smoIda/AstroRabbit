@@ -1,32 +1,16 @@
-export type ExecutionStatus =
-  "IDLE" | "RUNNING" | "SUCCESS" | "CANCELLED" | "ERROR";
+import { NodeData } from "@/app/projects/test/_providers/editor/config";
+
+export type ExecutionStatus = "IDLE" | "RUNNING" | "SUCCESS" | "ABORTED" | "ERROR";
 
 export type ExecutionEvent =
   | { type: "EXECUTION_STARTED" }
   | { type: "EXECUTION_SUCCESS" }
-  | { type: "EXECUTION_CANCELLED" }
+  | { type: "EXECUTION_ABORTED" }
   | { type: "EXECUTION_ERROR"; output: string }
-  | {
-      type: "NODE_STARTED";
-      nodeId: string;
-    }
-  | {
-      type: "NODE_SUCCESS";
-      nodeId: string;
-      duration: number;
-      output: Record<string, string>;
-    }
-  | {
-      type: "NODE_SKIPPED";
-      nodeId: string;
-      duration: number;
-    }
-  | {
-      type: "NODE_ERROR";
-      nodeId: string;
-      duration: number;
-      output: Record<string, string>;
-    }
+  | { type: "NODE_STARTED"; nodeId: string }
+  | { type: "NODE_SUCCESS"; nodeId: string; duration: number; output: NodeData["output"] }
+  | { type: "NODE_SKIPPED"; nodeId: string; duration: number }
+  | { type: "NODE_ERROR"; nodeId: string; duration: number; output: NodeData["output"] }
   | { type: "EDGE_STARTED"; edgeId: string }
   | { type: "EDGE_FINISHED"; edgeId: string }
   | { type: "EDGE_SKIPPED"; edgeId: string };
@@ -38,14 +22,6 @@ export type InitialExecutor = {
 };
 
 export type ActionExecutor =
-  | {
-      type: "RESET";
-    }
-  | {
-      type: "SET_ID";
-      payload: string;
-    }
-  | {
-      type: "SET_EXECUTOR";
-      payload: { status: ExecutionStatus; error?: string };
-    };
+  | { type: "RESET" }
+  | { type: "SET_ID"; payload: string }
+  | { type: "PATCH_EXECUTOR"; payload: { status: ExecutionStatus; error?: string } };

@@ -10,7 +10,9 @@ export default function Documents() {
 
   return (
     <Section ref={scope} previousRoute="/">
-      <SectionHeading srOnly="Documents" />
+      <div data-depth="0.12">
+        <SectionHeading srOnly="Documents" />
+      </div>
     </Section>
   );
 }

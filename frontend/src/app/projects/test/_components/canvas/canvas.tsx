@@ -17,36 +17,33 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 
-import {
-  CanvasNode,
-  nodeTypes,
-} from "@/app/projects/test/_providers/editor/config";
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
-import {
-  CanvasEdge,
-  edgeTypes,
-} from "@/app/projects/test/_components/canvas/edges/config";
+import { CanvasNode, NODE_TYPES } from "@/app/projects/test/_providers/editor/config";
+import { CanvasEdge, EDGE_TYPES } from "@/app/projects/test/_providers/editor/config";
+import { useEditorAction, useEditorState } from "@/app/projects/test/_hooks/use-editor";
 import { CustomConnectionLine } from "@/app/projects/test/_components/canvas/edges/connection-line";
-import "@/app/projects/test/_components/canvas/config.css";
 import { handleConfig } from "@/app/projects/test/_components/canvas/nodes/base/config";
+import { Header } from "@/app/projects/test/_components/layout/header";
+
+import "@/app/projects/test/_components/canvas/config.css";
+
+import { MainFrame } from "@/components/layout/main-frame";
 
 export function Canvas() {
   const { getNode } = useReactFlow();
-  const { state, action } = useEditor();
+  const { action: editorAction } = useEditorAction();
+  const { state: editorState } = useEditorState();
 
-  const onNodesChange = (changes: NodeChange<CanvasNode>[]) =>
-    action.changeNode(changes);
+  const onNodesChange = (changes: NodeChange<CanvasNode>[]) => editorAction.changeNode(changes);
 
   const onNodesDelete = (nodes: CanvasNode[]) =>
-    nodes.forEach((node) => action.deleteNode(node.id));
+    nodes.forEach((node) => editorAction.deleteNode(node.id));
 
-  const onConnect = (connection: Connection) => action.createEdge(connection);
+  const onConnect = (connection: Connection) => editorAction.createEdge(connection);
 
-  const onEdgesChange = (changes: EdgeChange<CanvasEdge>[]) =>
-    action.changeEdge(changes);
+  const onEdgesChange = (changes: EdgeChange<CanvasEdge>[]) => editorAction.changeEdge(changes);
 
   const onEdgesDelete = (edge: CanvasEdge[]) =>
-    edge.forEach((edge) => action.deleteEdge(edge.id));
+    edge.forEach((edge) => editorAction.deleteEdge(edge.id));
 
   const isValidConnection = useCallback(
     (edgeOrConnection: Connection | Edge) => {
@@ -55,19 +52,18 @@ export function Canvas() {
       if (source === target) return false;
 
       // Hinders multiple edges between 2 nodes
-      const hasNodePairDuplicate = state.edges.some(
+      const hasNodePairDuplicate = editorState.edges.some(
         (e) => e.source === source && e.target === target,
       );
       if (hasNodePairDuplicate) return false;
 
       // Handle's isConnectable only controls direct UI interaction, it doesn't account for graph state or connection limits.
       if (targetHandle) {
-        const targetConnections = state.edges.filter(
+        const targetConnections = editorState.edges.filter(
           (e) => e.target === target && e.targetHandle === targetHandle,
         );
 
-        if (targetConnections.length >= handleConfig.MAX_CONNECTIONS)
-          return false;
+        if (targetConnections.length >= handleConfig.MAX_CONNECTIONS) return false;
       }
 
       const sourceNode = getNode(source);
@@ -76,8 +72,8 @@ export function Canvas() {
       if (!targetNode || !sourceNode) return false;
 
       // Hinders Node A -> Node B -> Node C -> Node A
-      const edges = state.edges;
-      const nodes = state.nodes;
+      const edges = editorState.edges;
+      const nodes = editorState.nodes;
 
       const hasCycle = (node: Node, visited = new Set<string>()): boolean => {
         if (visited.has(node.id)) return false;
@@ -91,45 +87,49 @@ export function Canvas() {
 
       return !hasCycle(targetNode);
     },
-    [state.nodes, state.edges, getNode],
+    [editorState.nodes, editorState.edges, getNode],
   );
 
   return (
-    <ReactFlow
-      tabIndex={0}
+    <div className="relative">
+      <MainFrame label="PROJECT NAME">
+        <Header />
 
-      nodes={state.nodes}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      onNodesDelete={onNodesDelete}
+        <ReactFlow
+          tabIndex={0}
 
-      edges={state.edges}
-      edgeTypes={edgeTypes}
-      onEdgesChange={onEdgesChange}
-      onEdgesDelete={onEdgesDelete}
+          nodes={editorState.nodes}
+          nodeTypes={NODE_TYPES}
+          onNodesChange={onNodesChange}
+          onNodesDelete={onNodesDelete}
 
-      connectionLineComponent={CustomConnectionLine}
+          edges={editorState.edges}
+          edgeTypes={EDGE_TYPES}
+          onEdgesChange={onEdgesChange}
+          onEdgesDelete={onEdgesDelete}
 
-      onConnect={onConnect}
-      isValidConnection={isValidConnection}
+          connectionLineComponent={CustomConnectionLine}
 
-      deleteKeyCode={["Backspace", "Delete"]}
+          onConnect={onConnect}
+          isValidConnection={isValidConnection}
 
-      panOnScroll
-      selectionOnDrag
-      panOnDrag={false}
+          deleteKeyCode={["Backspace", "Delete"]}
 
-      selectionMode={SelectionMode.Partial}
-      connectionMode={ConnectionMode.Strict}
+          panOnScroll
+          selectionOnDrag
+          panOnDrag={false}
 
-      fitView
-      proOptions={{ hideAttribution: true }}
-    >
-      <Background
-        color="#5f5f6440"
-        variant={BackgroundVariant.Cross}
-        gap={40}
-      />
-    </ReactFlow>
+          selectionMode={SelectionMode.Partial}
+          connectionMode={ConnectionMode.Strict}
+
+          fitView
+          proOptions={{ hideAttribution: true }}
+
+          className="outline-none"
+        >
+          <Background color="#5f5f6440" variant={BackgroundVariant.Cross} gap={40} />
+        </ReactFlow>
+      </MainFrame>
+    </div>
   );
 }

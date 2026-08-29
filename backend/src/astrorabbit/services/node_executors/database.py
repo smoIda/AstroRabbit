@@ -9,7 +9,7 @@ async def execute_database(
     node: DatabaseNode, output: dict[str, Any]
 ) -> NodeResult[DatabaseOutput]:
     try:
-        await asyncio.sleep(3)
+        await asyncio.sleep(1)
 
         return NodeResult(success=True, output=DatabaseOutput(body=output.copy()))
 

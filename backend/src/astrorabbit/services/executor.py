@@ -13,7 +13,7 @@ from astrorabbit.schemas.executor import (
     ExecutionStartedEvent,
     ExecutionSuccessEvent,
     ExecutionErrorEvent,
-    ExecutionCancelledEvent,
+    ExecutionAbortedEvent,
     NodeSkippedEvent,
     NodeStartedEvent,
     NodeSuccessEvent,
@@ -54,7 +54,7 @@ async def execute_program(
         await emit(ExecutionErrorEvent(output="Encountered node error"))
 
     except asyncio.CancelledError:
-        await emit(ExecutionCancelledEvent())
+        await emit(ExecutionAbortedEvent())
         raise
 
     except Exception as error:
@@ -100,13 +100,17 @@ async def execute_node(
 
             try:
                 await node_task
-
             except asyncio.CancelledError:
                 pass
 
             raise NodeSkippedException(f"{node.id} is skipped")
 
         skip_task.cancel()
+
+        try:
+            await skip_task
+        except asyncio.CancelledError:
+            pass
 
         result = await node_task
 
@@ -116,10 +120,6 @@ async def execute_node(
         await emit(NodeSkippedEvent(node_id=node.id, duration=duration))
 
         result = None
-
-        # connected_edges = [edge for edge in request.edges if edge.source == node.id]
-        # for edge in connected_edges:
-        #     await emit(EdgeSkippedEvent(edge_id=edge.id))
 
     except asyncio.CancelledError:
         raise
@@ -183,6 +183,10 @@ async def traverse_edge(
 
         if next_node is None:
             raise ValueError(f"Target node '{edge.target}' not found")
+
+        if next_node.id in state.executed:
+            await emit(EdgeFinishedEvent(edge_id=edge.id))
+            continue
 
         await execute_node(
             next_node,

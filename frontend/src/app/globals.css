@@ -10,22 +10,18 @@
   --color-accent-ink: #d7294f;
   --color-accent-ink-soft: #e04b6c;
 
-  /*
+  --font-headline: var(--font-headline)
+  
+    /*
   OLD
   --color-accent-ink: #a1ab91;
-  --color-accent-ink-soft: #b7beaa; */
+  --color-accent-ink-soft: #b7beaa; */;
 }
 
 @layer utilities {
-  .font-headline {
-    font-family: var(--font-headline);
-    color: var(--color-ink);
-    letter-spacing: -0.02em;
-  }
-
   .custom-scroll::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 4px;
+    height: 4px;
   }
 
   .custom-scroll::-webkit-scrollbar-track {
@@ -33,18 +29,12 @@
   }
 
   .custom-scroll::-webkit-scrollbar-thumb {
-    background: var(--color-red-ink);
+    background: var(--color-ink-soft);
   }
 
   .custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--color-red-ink-soft);
+    background: var(--color-ink-soft);
   }
-}
-
-:where(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--font-headline);
-  color: var(--color-ink);
-  letter-spacing: -0.02em;
 }
 
 #main {

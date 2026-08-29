@@ -48,7 +48,7 @@ export function BaseHandle({
                     className="group-hover/node:inset-px group-active/node:inset-0.5"
                   />
 
-                  <Plus className="stroke-ink absolute top-1/2 left-1/2 size-3/4 -translate-1/2" />
+                  <Plus className="text-ink absolute top-1/2 left-1/2 size-3/4 -translate-1/2" />
                 </>
               )}
             </Handle>

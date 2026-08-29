@@ -9,8 +9,7 @@ import { BracketGroup } from "@/components/ui/decorations/bracket";
 import { cn } from "@/lib/utils/cn";
 import { cva, type VariantProps } from "@/lib/utils/cva";
 
-const isExternalLink = (href: string) =>
-  /^(https?:\/\/|\/\/|mailto:|tel:|ftp:|sms:)/.test(href);
+const isExternalLink = (href: string) => /^(https?:\/\/|\/\/|mailto:|tel:|ftp:|sms:)/.test(href);
 
 const hoverInsetStyles = {
   sm: "group-hover/btn:inset-px group-active/btn:inset-0.5",
@@ -32,9 +31,9 @@ const styles = cva(
       },
 
       size: {
-        sm: "px-2 text-sm",
-        md: "px-3 text-base",
-        lg: "px-4 text-lg",
+        sm: "px-2 py-1 text-[14px]",
+        md: "px-3 py-1 text-[16px]",
+        lg: "px-4 py-1.25 text-[18px]",
         icon: "p-1.5",
       },
     },
@@ -43,13 +42,6 @@ const styles = cva(
       variant: "normal",
       size: "sm",
     },
-
-    compoundVariants: [
-      {
-        variant: "no-brackets",
-        className: "p-0 h-auto",
-      },
-    ],
   },
 );
 
@@ -79,9 +71,14 @@ type ExternalLink = Base &
 
 type ButtonProps = NativeButton | InternalLink | ExternalLink;
 
-function extract<T extends ButtonProps>(props: T) {
-  const { children, variant, size, hoverInset, className, ...rest } = props;
-
+function extract<T extends ButtonProps>({
+  children,
+  variant,
+  size,
+  hoverInset,
+  className,
+  ...props
+}: T) {
   const safeSize = !size || size === "icon" ? "sm" : size;
 
   const classes = cn(styles({ variant, size, className }));
@@ -102,18 +99,18 @@ function extract<T extends ButtonProps>(props: T) {
     </>
   );
 
-  return { classes, content, rest };
+  return { classes, content, props };
 }
 
-function validate(props: ButtonProps) {
+function validate({ children, size, ...props }: ButtonProps) {
   if (process.env.NODE_ENV === "production") return;
 
-  if (props.size === "icon" && React.Children.count(props.children) !== 1) {
+  if (size === "icon" && React.Children.count(children) !== 1) {
     console.warn('Button with size="icon" should contain a single icon.');
   }
 
   if (
-    props.size === "icon" &&
+    size === "icon" &&
     !("aria-label" in props && props["aria-label"]) &&
     !("aria-labelledby" in props && props["aria-labelledby"])
   ) {
@@ -123,25 +120,20 @@ function validate(props: ButtonProps) {
   }
 }
 
-function renderButton(props: NativeButton) {
-  const { classes, content, rest } = extract(props);
-  const { ref, type, ...buttonProps } = rest;
+function renderButton(btn: NativeButton) {
+  const { classes, content, props } = extract(btn);
+  const { ref, type, ...buttonProps } = props;
 
   return (
-    <button
-      {...buttonProps}
-      ref={ref}
-      type={type ?? "button"}
-      className={classes}
-    >
+    <button {...buttonProps} ref={ref} type={type ?? "button"} className={classes}>
       {content}
     </button>
   );
 }
 
-function renderInternalLink(props: InternalLink) {
-  const { classes, content, rest } = extract(props);
-  const { ref, href, ...linkProps } = rest;
+function renderInternalLink(btn: InternalLink) {
+  const { classes, content, props } = extract(btn);
+  const { ref, href, ...linkProps } = props;
 
   return (
     <Link {...linkProps} ref={ref} href={href} className={classes}>
@@ -150,9 +142,9 @@ function renderInternalLink(props: InternalLink) {
   );
 }
 
-function renderExternalLink(props: ExternalLink) {
-  const { classes, content, rest } = extract(props);
-  const { ref, href, target, rel, ...linkProps } = rest;
+function renderExternalLink(btn: ExternalLink) {
+  const { classes, content, props } = extract(btn);
+  const { ref, href, target, rel, ...linkProps } = props;
 
   return (
     <a

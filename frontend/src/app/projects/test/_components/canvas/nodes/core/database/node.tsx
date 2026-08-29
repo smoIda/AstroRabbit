@@ -11,11 +11,5 @@ const ICONS = {
 } as const;
 
 export function DatabaseNode(node: NodeProps<Database>) {
-  return (
-    <BaseNode
-      {...node}
-      configIcons={ICONS}
-      handles={generateHandle(node.type)}
-    />
-  );
+  return <BaseNode {...node} configIcons={ICONS} handles={generateHandle(node.type)} />;
 }

@@ -110,9 +110,7 @@ const variants = {
 } as const;
 
 function scaleText(i: number): number {
-  const pattern = [
-    1.0, 0.84, 0.9, 0.66, 0.78, 0.95, 0.82, 0.6, 0.72, 0.94, 0.72,
-  ];
+  const pattern = [1.0, 0.84, 0.9, 0.66, 0.78, 0.95, 0.82, 0.6, 0.72, 0.94, 0.72];
 
   return pattern[i % pattern.length];
 }
@@ -122,11 +120,10 @@ type SectionHeadingProps = React.HTMLAttributes<HTMLDivElement> & {
   srOnly: keyof typeof variants;
 };
 
-export function SectionHeading(props: SectionHeadingProps) {
+export function SectionHeading({ className, srOnly, ...props }: SectionHeadingProps) {
   const scope = useRef<HTMLDivElement | null>(null);
   const isMobile = useMobile({ breakpoint: "md", type: "max" });
 
-  const { className, srOnly, ...rest } = props;
   const isFirstTime = useMemo(() => {
     if (typeof window === "undefined") return true;
     return sessionStorage.getItem("IS_FIRST_TIME") === null;
@@ -159,7 +156,7 @@ export function SectionHeading(props: SectionHeadingProps) {
         "pointer-events-none flex items-center justify-center leading-none text-nowrap select-none",
         className,
       )}
-      {...rest}
+      {...props}
     >
       <h1 className="sr-only">{srOnly}</h1>
 

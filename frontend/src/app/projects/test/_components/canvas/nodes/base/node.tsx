@@ -1,28 +1,18 @@
 import { useState } from "react";
 
-import { NodeToolbar, Position, useConnection, useStore } from "@xyflow/react";
+import { useConnection, useStore } from "@xyflow/react";
+
+import { Clock, PlusSquare } from "lucide-react";
 
 import {
-  Ban,
-  CheckCheck,
-  Clock,
-  FastForward,
-  LucideIcon,
-  Play,
-  PlusSquare,
-  Square,
-  SquareDashed,
-  Trash2,
-} from "lucide-react";
-
-import { QuickActions } from "@/app/projects/test/_components/layout/quick-actions";
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
-import {
-  NodeStatus,
+  STATUS_ICONS,
   type BaseNode,
 } from "@/app/projects/test/_components/canvas/nodes/base/config";
 import { BaseHandle } from "@/app/projects/test/_components/canvas/nodes/base/handle";
-import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
+import {
+  formatDuration,
+  getVisibleConfigs,
+} from "@/app/projects/test/_components/canvas/nodes/base/utils";
 
 import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
@@ -31,14 +21,7 @@ import { Badge } from "@/components/ui/primitives/badge";
 import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
-
-const STATUS_ICONS: Record<NodeStatus, LucideIcon> = {
-  IDLE: SquareDashed,
-  RUNNING: Square,
-  SUCCESS: CheckCheck,
-  SKIPPED: FastForward,
-  ERROR: Ban,
-};
+import { formatText } from "@/lib/utils/formatText";
 
 function Label(data: BaseNode["data"]) {
   const [isRenaming, setIsRenaming] = useState(false);
@@ -76,6 +59,7 @@ function Label(data: BaseNode["data"]) {
     <input
       type="text"
       value={label}
+      maxLength={50}
       placeholder="Node name"
       autoFocus
       onChange={(e) => setLabel(e.target.value)}
@@ -94,77 +78,34 @@ function Label(data: BaseNode["data"]) {
   );
 }
 
-export function BaseNode(props: BaseNode) {
-  const NodeIcon = props.data.icon;
-  const StatusIcon = STATUS_ICONS[props.data.runtime.status];
+export function BaseNode({ id, type, data, selected, className, handles, configIcons }: BaseNode) {
+  const NodeIcon = data.icon;
+  const StatusIcon = STATUS_ICONS[data.runtime.status].icon;
 
-  const editor = useEditor();
-  const executor = useExecutor();
-
-  const { inProgress } = useConnection(); // Detects edges dragging
   const selectedCount = useStore((s) => s.nodes.filter((node) => node.selected).length);
 
-  function formatDuration(duration: number) {
-    if (!Number.isFinite(duration) || duration <= 0) return "--";
-
-    if (duration < 1) return `${Math.round(duration * 1000)}\u00A0ms`;
-
-    return `${duration.toFixed(2)}\u00A0s`;
-  }
+  const connection = useConnection(); // Detects edges dragging
 
   return (
     <>
-      <NodeToolbar
-        isVisible={props.selected && selectedCount === 1 && !inProgress}
-        position={Position.Top}
-        offset={16}
-      >
-        <QuickActions {...props} />
-      </NodeToolbar>
-
-      <div className="w-full">
-        <span>{props.id}</span>
-        <Button
-          onClick={() => executor.run(props.id)}
-          size="icon"
-          aria-label="Run"
-          variant="no-brackets"
-        >
-          <Play size={12} />
-        </Button>
-
-        {props.data.runtime.status === "RUNNING" && (
-          <Button
-            onClick={() => executor.skip(props.id)}
-            className="nopan nodrag bg-accent-ink absolute -top-6 right-0 px-1"
-            variant="no-brackets"
-          >
-            Skip
-          </Button>
-        )}
-      </div>
-
       <div
         className={cn(
           "group relative flex w-80 flex-col border-2 bg-white",
-          selectedCount > 0 && !props.selected && "border-ink/40 *:opacity-40",
-          props.className,
+          selectedCount > 0 && !selected && "border-ink/40 *:opacity-40",
+          className,
         )}
       >
         <Bracket className="bg-accent-ink top-0.5 right-0.5 size-8" position="top-right" />
 
         <div className="flex w-full items-center gap-x-4 px-4 py-2">
           <div className="relative flex size-8 shrink-0 items-center justify-center">
-            <Diamond
-              variant="filled"
-              className="from-white-ink/40 via-white-ink-soft/20 to-white-ink-soft absolute inset-0 size-8 bg-linear-to-br"
-            />
+            <Diamond variant="filled" className="bg-ink/5 absolute inset-0 size-8" />
 
-            <NodeIcon className="stroke-ink relative z-10 size-5" />
+            <NodeIcon className="text-ink relative z-10 size-5" />
           </div>
 
           <div className="flex w-full min-w-0 flex-col">
-            <Label {...props.data} />
+            <Label {...data} />
 
             <div
               onWheel={(e) => {
@@ -180,83 +121,68 @@ export function BaseNode(props: BaseNode) {
               }}
               className="nowheel flex w-full scrollbar-none items-center gap-x-2 overflow-x-auto"
             >
-              <Badge key={`${props.id}-badge`} color="accent-soft">
-                {props.type.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ")}
+              <Badge key={`${id}-badge`} color="accent-soft">
+                {formatText(type)}
               </Badge>
 
-              {props.data.badge.length > 0 &&
-                props.data.badge.map((badge) => {
+              {data.badge.length > 0 &&
+                data.badge.map((badge) => {
                   return (
-                    <Button
-                      key={badge}
-                      onClick={(e) => {
-                        e.stopPropagation();
-
-                        editor.action.setBadge(props.id, "DELETE", badge);
-                      }}
-                      variant="no-brackets"
-                      className="nodrag nopan group/badge"
-                    >
-                      <Badge title={badge} className="group-hover/badge:opacity-30" color="accent">
-                        {badge}
-                      </Badge>
-
-                      <Trash2
-                        className={cn(
-                          "stroke-accent-ink absolute -translate-y-full opacity-0",
-                          "transition-[opacity,translate] duration-200 group-hover/badge:translate-y-0 group-hover/badge:opacity-100",
-                        )}
-                        size={12}
-                      />
-                    </Button>
+                    <Badge title={badge} className="group-hover/badge:opacity-30" color="accent">
+                      {badge}
+                    </Badge>
                   );
                 })}
 
               <Button
+                aria-label="Add badge"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
                 variant="no-brackets"
                 size="icon"
-                className="nodrag nopan"
+                className="nodrag nopan p-0"
               >
-                <PlusSquare size={16} className="stroke-ink-soft active:bg-accent-ink" />
+                <PlusSquare size={16} className="text-ink-soft active:bg-accent-ink" />
               </Button>
             </div>
           </div>
         </div>
 
         <div
-          data-selected={props.selected}
+          data-selected={selected}
           className={cn(
             "grid grid-rows-[0fr] transition-[grid-template-rows] duration-200",
             "data-[selected=true]:grid-rows-[1fr]",
-            !inProgress && "group-hover:grid-rows-[1fr]",
+            !connection.inProgress && "group-hover:grid-rows-[1fr]",
           )}
         >
           <div className="overflow-hidden">
-            <div className="border-ink/10! relative flex w-full flex-col items-start gap-y-2 border-t-2 border-dashed p-2">
-              {Object.entries(props.data.config).map(([key, value]) => {
+            <div className="border-ink/10 relative flex w-full flex-col items-start gap-y-2 border-t-2 border-dashed p-2">
+              {getVisibleConfigs(type, data.config).map(([key, value]) => {
                 const Icon =
-                  props.configIcons[
+                  configIcons[
                     key
                       .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
                       .replace(/[-\s]+/g, "_")
                       .toUpperCase()
                   ];
 
+                const formattedValue =
+                  typeof value === "object" && value !== null
+                    ? JSON.stringify(value)
+                    : String(value ?? "");
+
                 return (
                   <div key={key} className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-x-2">
-                      {Icon && <Icon size={12} strokeWidth={2} className="stroke-ink-soft/60" />}
+                      {Icon && <Icon size={12} strokeWidth={2} className="text-ink-soft/60" />}
                       <span className="text-xs font-semibold uppercase">
                         {key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ")}
                       </span>
                     </div>
 
-                    <span className="w-40 truncate text-right text-xs">
-                      {typeof value === "object" ? JSON.stringify(value) : value}
-                    </span>
+                    <span className="w-40 truncate text-right text-xs">{formattedValue}</span>
                   </div>
                 );
               })}
@@ -264,35 +190,32 @@ export function BaseNode(props: BaseNode) {
           </div>
         </div>
 
-        <div className="border-ink/10! flex w-full items-center justify-between gap-x-2 border-t-2 border-dashed p-2">
+        <div className="border-ink/10 flex w-full items-center justify-between gap-x-2 border-t-2 border-dashed p-2">
           <div className="flex items-center justify-between gap-x-2">
-            <Clock size={12} strokeWidth={2} className="stroke-ink-soft/60" />
+            <Clock size={12} strokeWidth={2} className="text-ink-soft/60" />
 
             <span className="text-xs font-medium">
-              {formatDuration(Number(props.data.runtime.duration))}
+              {formatDuration(Number(data.runtime.duration))}
             </span>
           </div>
 
           <StatusIcon
             size={16}
             className={cn(
-              props.data.runtime.status === "IDLE" && "stroke-gray-500",
-              props.data.runtime.status === "RUNNING" && "stroke-sky-500",
-              props.data.runtime.status === "SUCCESS" && "stroke-emerald-500",
-              props.data.runtime.status === "SKIPPED" && "stroke-orange-500",
-              props.data.runtime.status === "ERROR" && "stroke-red-500",
+              STATUS_ICONS[data.runtime.status].color,
+              data.runtime.status === "RUNNING" && "animate-spin",
             )}
           />
         </div>
 
-        {props.selected && <Shadow />}
+        {selected && <Shadow />}
       </div>
 
       <BaseHandle
-        handles={props.handles}
+        handles={handles}
         className={cn(
           "pointer-events-none opacity-0",
-          (props.selected || inProgress) && "pointer-events-auto opacity-100",
+          (selected || connection.inProgress) && "pointer-events-auto opacity-100",
         )}
       />
     </>

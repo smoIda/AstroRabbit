@@ -10,9 +10,11 @@ export default function Home() {
 
   return (
     <Section ref={scope} nextRoute="/docs">
-      <SectionHeading srOnly="Astro Rabbit" />
+      <div data-depth="0.12">
+        <SectionHeading srOnly="Astro Rabbit" />
 
-      <div className="w-full pt-10 text-center text-2xl">Scroll down</div>
+        <div className="w-full pt-10 text-center text-2xl">Scroll down</div>
+      </div>
     </Section>
   );
 }

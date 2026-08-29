@@ -8,24 +8,15 @@ import { Link } from "@/components/config";
 
 import { cn } from "@/lib/utils/cn";
 
-type Section = {
-  children: React.ReactNode;
-  ref?: React.RefObject<HTMLElement | null>;
+type Section = React.ComponentPropsWithRef<"section"> & {
   className?: string;
   nextRoute?: Link["path"];
   previousRoute?: Link["path"];
 };
 
-export function Section({
-  children,
-  ref,
-  className,
-  nextRoute,
-  previousRoute,
-  ...props
-}: Section) {
+export function Section({ children, className, nextRoute, previousRoute, ...props }: Section) {
   const router = useTransitionRouter();
-  const scope = useRef<HTMLDivElement>(null);
+  
   const activeDirection = useRef<"down" | "up" | null>(null);
   const navigationTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -46,8 +37,7 @@ export function Section({
       if (activeDirection.current) return;
 
       const isAtBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 10;
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10;
       const isAtTop = window.scrollY <= 10;
 
       const targetRoute =
@@ -105,16 +95,10 @@ export function Section({
 
   return (
     <section
-      ref={ref}
-      className={cn(
-        "pointer-events-auto! relative size-full px-8 py-18",
-        className,
-      )}
+      className={cn("pointer-events-auto! relative size-full px-8 py-18", className)}
       {...props}
     >
-      <div ref={scope} data-depth="0.12" className="size-full">
-        {children}
-      </div>
+      {children}
     </section>
   );
 }

@@ -1,14 +1,13 @@
 import { BaseEdge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
 
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import { useEditorState } from "@/app/projects/test/_hooks/use-editor";
 
 import { cn } from "@/lib/utils/cn";
 
 function randomOffset(id: string, min = 32, max = 64) {
   let hash = 0;
 
-  for (let i = 0; i < id.length; i += 4)
-    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < id.length; i += 4) hash = id.charCodeAt(i) + ((hash << 5) - hash);
 
   const positiveHash = Math.abs(hash);
 
@@ -35,16 +34,16 @@ export function Sharp({
     offset: randomOffset(id),
   });
 
-  const { state } = useEditor();
-  const status = state.edges.find((edge) => edge.id === id)?.data?.status;
+  const { state: editorState } = useEditorState();
+
+  const status = editorState.edges.find((edge) => edge.id === id)?.data?.status;
 
   const startMarkerId = `start-${id}`;
   const endMarkerId = `end-${id}`;
 
   const colorClass = cn(
     "stroke-ink fill-none stroke-2 transition-colors duration-200",
-    status === "RUNNING" &&
-      "stroke-amber-400 [stroke-dasharray:8] animate-edge-running",
+    status === "RUNNING" && "stroke-amber-400 [stroke-dasharray:8] animate-edge-running",
     status === "FINISHED" && "stroke-emerald-500",
     status === "SKIPPED" && "stroke-ink-soft/10",
   );

@@ -1,10 +1,11 @@
 import { ReactFlowProvider } from "@xyflow/react";
 
-import { Canvas } from "@/app/projects/test/_components/canvas/canvas";
-import { Header } from "@/app/projects/test/_components/layout/header";
 import { Toolbox } from "@/app/projects/test/_components/layout/toolbox";
+import { Canvas } from "@/app/projects/test/_components/canvas/canvas";
+import { Properties } from "@/app/projects/test/_components/layout/properties";
 import { EditorProvider } from "@/app/projects/test/_providers/editor/provider";
 import { ExecutorProvider } from "@/app/projects/test/_providers/executor/provider";
+import { EngineProvider } from "@/app/projects/test/_providers/engine/provider";
 
 import { Section } from "@/components/layout/section";
 
@@ -19,13 +20,15 @@ export default async function ProjectId({ params }: PageProps) {
     <ReactFlowProvider>
       <EditorProvider>
         <ExecutorProvider>
-          <Section className="flex items-center justify-center p-0">
-            <Header />
+          <EngineProvider>
+            <Section className="grid grid-cols-[auto_1fr_auto] p-0">
+              <Toolbox />
 
-            <Toolbox />
+              <Canvas />
 
-            <Canvas />
-          </Section>
+              <Properties />
+            </Section>
+          </EngineProvider>
         </ExecutorProvider>
       </EditorProvider>
     </ReactFlowProvider>

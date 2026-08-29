@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { LucideIcon, MousePointer2, Plus } from "lucide-react";
 
 import { CanvasNode, InitialEditor } from "@/app/projects/test/_providers/editor/config";
 import { SETTINGS } from "@/app/projects/test/_components/canvas/config";
-import { useEditor } from "@/app/projects/test/_hooks/use-editor";
+import { useEditorAction, useEditorState } from "@/app/projects/test/_hooks/use-editor";
 
 import { Button } from "@/components/ui/primitives/button";
+import { cn } from "@/lib/utils/cn";
 
 const toolboxItems: ToolboxItem[] = [
   {
@@ -47,18 +48,20 @@ function validate(type: CanvasNode["type"], nodes: InitialEditor["nodes"]) {
 // Unprovable typescript issue but the correlation is real omfg
 
 export function Toolbox() {
-  const editor = useEditor();
+  const { state: editorState } = useEditorState();
+  const { action: editorAction } = useEditorAction();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleInsert = (e: KeyboardEvent) => {
       let type: CanvasNode["type"];
 
       switch (e.key) {
-        case "R":
+        case "E":
           type = "HTTP_REQUEST";
           break;
 
-        case "T":
+        case "R":
           type = "DATABASE";
           break;
 
@@ -66,41 +69,28 @@ export function Toolbox() {
           return;
       }
 
-      if (!validate(type, editor.state.nodes)) return;
+      if (!validate(type, editorState.nodes)) return;
 
-      editor.action.createNode("HTTP_REQUEST");
+      editorAction.createNode(type);
     };
 
     window.addEventListener("keydown", handleInsert);
 
     return () => window.removeEventListener("keydown", handleInsert);
-  }, [editor.state.nodes]);
+  }, [editorState.nodes]);
 
   return (
-    <div className="absolute bottom-8 left-8 z-60 flex flex-col items-center justify-center gap-y-4">
-      {toolboxItems.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <Button
-            onClick={() => editor.action.selectTool(item.id)}
-            key={item.id}
-            size="icon"
-            aria-label={item.id}
-          >
-            <Icon size={20} />
-            {/* 
-            <span
-              className={cn(
-                "text-ink-soft absolute -right-2 -bottom-1 text-[8px]",
-                { "text-accent-ink": state.tool === item.id },
-              )}
-            >
-              {item.keybind}
-            </span> */}
-          </Button>
-        );
-      })}
-    </div>
+    <aside
+      className={cn(
+        "grid grid-cols-[0fr] transition-[grid-template-columns] duration-200",
+        isOpen && "grid-cols-[1fr]",
+      )}
+    >
+      <div className="overflow-hidden">
+        <div className="mt-4 ml-4 h-[calc(100%-30px)] w-80 border-2 bg-white">
+          {/* Content goes here */}
+        </div>
+      </div>
+    </aside>
   );
 }
