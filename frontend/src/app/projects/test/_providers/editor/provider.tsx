@@ -45,8 +45,8 @@ function editorActions(dispatch: React.Dispatch<ActionEditor>) {
     patchNodeBranding: (nodeId: string, label: string, icon: LucideIcon) =>
       dispatch({ type: "PATCH_NODE_BRANDING", payload: { id: nodeId, label, icon } }),
 
-    patchNodeConfig: (nodeId: string, config: NodeData["config"]) =>
-      dispatch({ type: "PATCH_NODE_CONFIG", payload: { id: nodeId, config } }),
+    patchNodeConfig: (nodeId: string, key: string, value: unknown) =>
+      dispatch({ type: "PATCH_NODE_CONFIG", payload: { id: nodeId, key, value } }),
 
     patchNodeExecution: (
       nodeId: string,

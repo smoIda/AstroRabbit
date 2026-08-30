@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef } from "react";
+
 import z from "zod";
 
 import { NodeData } from "@/app/projects/test/_providers/editor/config";
@@ -10,7 +12,6 @@ import { Badge } from "@/components/ui/primitives/badge";
 
 import { formatText } from "@/lib/utils/formatText";
 import { cn } from "@/lib/utils/cn";
-import { useCallback, useRef } from "react";
 
 type Form<T extends z.ZodRawShape> = {
   nodeId: string;
@@ -53,19 +54,16 @@ export function Form<T extends z.ZodRawShape>({ nodeId, config, schema, action }
     (key: string, value: unknown) => {
       if (delayRef.current) clearTimeout(delayRef.current);
 
-      const delayMs = 500;
-
-      delayRef.current = setTimeout(
-        () =>
-          action.patchNodeConfig(nodeId, {
-            ...config,
-            [key]: value,
-          }),
-        delayMs,
-      );
+      delayRef.current = setTimeout(() => action.patchNodeConfig(nodeId, key, value), 500);
     },
-    [nodeId, config, action],
+    [nodeId, action],
   );
+
+  useEffect(() => {
+    return () => {
+      if (delayRef.current) clearTimeout(delayRef.current);
+    };
+  }, []);
 
   return (
     <div className="relative space-y-2">

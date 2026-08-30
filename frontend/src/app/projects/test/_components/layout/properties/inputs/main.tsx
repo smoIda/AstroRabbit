@@ -1,5 +1,5 @@
+import { CONFIG_SCHEMA_TYPES } from "@/app/projects/test/_components/canvas/config";
 import { resolveConfigSchema } from "@/app/projects/test/_components/canvas/utils";
-import { CONFIG_SCHEMA_TYPES } from "@/app/projects/test/_components/layout/properties/inputs/config";
 import { Form } from "@/app/projects/test/_components/layout/properties/inputs/form";
 import { Title } from "@/app/projects/test/_components/layout/properties/misc";
 import { CanvasNode, NodeData } from "@/app/projects/test/_providers/editor/config";

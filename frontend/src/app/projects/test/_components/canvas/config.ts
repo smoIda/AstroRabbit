@@ -1,6 +1,10 @@
+import z from "zod";
+
 import { Database, Globe } from "lucide-react";
 
 import { CanvasNode } from "@/app/projects/test/_providers/editor/config";
+import { DATABASE_SCHEMAS } from "@/app/projects/test/_components/canvas/nodes/core/database/config";
+import { HTTP_REQUEST_SCHEMAS } from "@/app/projects/test/_components/canvas/nodes/core/http-request/config";
 
 export const SETTINGS: Record<
   CanvasNode["type"],
@@ -68,4 +72,15 @@ export const NODE_DEFAULTS: {
       body: "Yo",
     },
   },
+};
+
+export const CONFIG_SCHEMA_TYPES: Record<
+  CanvasNode["type"],
+  z.ZodObject | Record<string, z.ZodObject>
+> = {
+  HTTP_REQUEST: {
+    MOCK_API: HTTP_REQUEST_SCHEMAS.MOCK_API.CONFIG,
+    CUSTOM_API: HTTP_REQUEST_SCHEMAS.CUSTOM_API.CONFIG,
+  },
+  DATABASE: DATABASE_SCHEMAS.CONFIG,
 };

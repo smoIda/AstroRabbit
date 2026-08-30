@@ -61,19 +61,27 @@ export const actionEditor = (state: InitialEditor, action: ActionEditor): Initia
     case "PATCH_NODE_BRANDING":
       return {
         ...state,
-        nodes: state.nodes.map((node) =>
-          node.id === action.payload.id
-            ? patchNode(node, { label: action.payload.label, icon: action.payload.icon })
-            : node,
-        ),
+        nodes: state.nodes.map((node) => {
+          if (node.id !== action.payload.id) return node;
+
+          return patchNode(node, { label: action.payload.label, icon: action.payload.icon });
+        }),
       };
 
     case "PATCH_NODE_CONFIG":
       return {
         ...state,
-        nodes: state.nodes.map((node) =>
-          node.id === action.payload.id ? patchNode(node, { config: action.payload.config }) : node,
-        ),
+        nodes: state.nodes.map((node) => {
+          if (node.id !== action.payload.id || !Object.hasOwn(node.data.config, action.payload.key))
+            return node;
+
+          return patchNode(node, {
+            config: {
+              ...node.data.config,
+              [action.payload.key]: action.payload.value,
+            },
+          });
+        }),
       };
 
     case "PATCH_NODE_EXECUTION":
@@ -81,12 +89,12 @@ export const actionEditor = (state: InitialEditor, action: ActionEditor): Initia
         ...state,
         nodes: state.nodes.map((node) => {
           if (node.id !== action.payload.id) return node;
-          if (action.payload.output !== undefined) {
+          if (action.payload.output !== undefined)
             return patchNode(node, {
               runtime: action.payload.runtime,
               output: action.payload.output,
             });
-          }
+
           return patchNode(node, { runtime: action.payload.runtime });
         }),
       };

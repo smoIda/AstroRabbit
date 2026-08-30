@@ -7,7 +7,7 @@ class HttpMockConfig(BaseModel):
     provider: Literal["MOCK_API"] = "MOCK_API"
 
     headers: dict[str, str] = Field(default_factory=dict)
-    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET"
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] = "GET"
     body: JsonValue | None = None
     latency: float = Field(default=0, ge=0, le=10)
     status_code: int = Field(default=200, ge=100, le=599, validation_alias="statusCode")
@@ -18,7 +18,7 @@ class HttpCustomConfig(BaseModel):
     provider: Literal["CUSTOM_API"] = "CUSTOM_API"
 
     headers: dict[str, str] = Field(default_factory=dict)
-    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET"
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] = "GET"
     body: JsonValue | None = None
     url: str
 

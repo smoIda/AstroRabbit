@@ -5,9 +5,11 @@ import { nanoid } from "nanoid";
 import { Plus, Trash2 } from "lucide-react";
 
 import {
-  inputClasses,
+  fieldClasses,
   Widget,
 } from "@/app/projects/test/_components/layout/properties/inputs/config";
+import { WidgetType } from "@/app/projects/test/_components/layout/properties/misc";
+
 import { Button } from "@/components/ui/primitives/button";
 
 type Row = {
@@ -51,19 +53,19 @@ export function RecordInput({ value, onChange }: Widget["RECORD"]) {
     <>
       {rows.map((r) => {
         return (
-          <div key={r.id} className="group flex items-center justify-center gap-x-2">
+          <div key={r.id} className="group relative flex items-center justify-center gap-x-2">
             <input
               placeholder="Key"
               value={r.key}
               onChange={(e) => onRowChange(r.id, "key", e.target.value)}
-              className={inputClasses}
+              className={fieldClasses}
             />
 
             <input
               placeholder="Value"
               value={r.value}
               onChange={(e) => onRowChange(r.id, "value", e.target.value)}
-              className={inputClasses}
+              className={fieldClasses}
             />
 
             <Button
@@ -78,6 +80,8 @@ export function RecordInput({ value, onChange }: Widget["RECORD"]) {
             >
               <Trash2 size={16} />
             </Button>
+
+            <WidgetType type="RECORD" />
           </div>
         );
       })}

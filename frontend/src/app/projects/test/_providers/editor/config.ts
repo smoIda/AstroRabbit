@@ -42,7 +42,7 @@ export type ActionEditor =
   | { type: "CREATE_NODE"; payload: CanvasNode["type"] }
   | { type: "CHANGE_NODE"; payload: NodeChange<CanvasNode>[] }
   | { type: "PATCH_NODE_BRANDING"; payload: { id: string; label: string; icon: LucideIcon } }
-  | { type: "PATCH_NODE_CONFIG"; payload: { id: string; config: NodeData["config"] } }
+  | { type: "PATCH_NODE_CONFIG"; payload: { id: string; key: string; value: unknown } }
   | {
       type: "PATCH_NODE_EXECUTION";
       payload: { id: string; runtime: NodeData["runtime"]; output?: NodeData["output"] };
