@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils/cn";
 import { cva, type VariantProps } from "@/lib/utils/cva";
 
 const styles = cva(
-  "border font-medium uppercase inline-flex items-center justify-center text-nowrap shrink-0",
+  "border font-medium uppercase inline-flex items-center tracking-wider justify-center text-nowrap shrink-0",
   {
     variants: {
       size: {

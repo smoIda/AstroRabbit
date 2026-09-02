@@ -1,21 +1,19 @@
-import { SelectInput } from "@/app/projects/test/_components/layout/properties/inputs/widgets/select";
-import { RecordInput } from "@/app/projects/test/_components/layout/properties/inputs/widgets/record";
-import { TextInput } from "@/app/projects/test/_components/layout/properties/inputs/widgets/text";
-import { NumberInput } from "@/app/projects/test/_components/layout/properties/inputs/widgets/number";
-import { JsonInput } from "@/app/projects/test/_components/layout/properties/inputs/widgets/json";
+import { SelectInput } from "@/app/projects/test/_components/layout/properties/widgets/select";
+import { RecordInput } from "@/app/projects/test/_components/layout/properties/widgets/record";
+import { TextInput } from "@/app/projects/test/_components/layout/properties/widgets/text";
+import { NumberInput } from "@/app/projects/test/_components/layout/properties/widgets/number";
+import { JsonInput } from "@/app/projects/test/_components/layout/properties/widgets/json";
 
-export const fieldClasses =
-  "bg-ink-soft/5 text-ink outline-ink flex min-w-20 flex-1 items-center justify-between p-2 focus:outline";
-
-export type Widget = {
+export type ConfigWidget = {
   SELECT: {
-    options: string[];
+    value: string;
+    options: readonly string[];
     onChange: (v: unknown) => void;
   };
 
   RECORD: {
-    value: string;
-    onChange: (v: Record<string, string>) => void;
+    value: Record<string, unknown>;
+    onChange: (v: Record<string, unknown>) => void;
   };
 
   TEXT: {
@@ -34,12 +32,12 @@ export type Widget = {
   };
 };
 
-export const WIDGET_TYPES: { [K in keyof Widget]: React.ComponentType<Widget[K]> } = {
+export const CONFIG_WIDGET_TYPES: {
+  [K in keyof ConfigWidget]: React.ComponentType<ConfigWidget[K]>;
+} = {
   SELECT: SelectInput,
   RECORD: RecordInput,
   TEXT: TextInput,
   NUMBER: NumberInput,
   JSON: JsonInput,
 };
-
-

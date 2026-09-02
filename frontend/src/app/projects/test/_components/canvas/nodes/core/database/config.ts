@@ -3,14 +3,16 @@ import { Node } from "@xyflow/react";
 import z from "zod";
 
 import { Base } from "@/app/projects/test/_components/canvas/nodes/base/config";
-import { withMeta } from "@/app/projects/test/_components/canvas/utils";
+import { withConfigMeta, withOutputMeta } from "@/app/projects/test/_components/canvas/utils";
 
 const config = z.object({
-  database: withMeta(z.enum(["MongoDB", "PostgreSQL", "MySQL"]), { widget: "SELECT" }),
+  database: withConfigMeta(z.enum(["MongoDB", "PostgreSQL", "MySQL"]).default("PostgreSQL"), {
+    widget: "SELECT",
+  }),
 });
 
 const output = z.object({
-  body: z.unknown(),
+  body: withOutputMeta(z.unknown().default(null), { widget: "JSON" }),
 });
 
 export const DATABASE_SCHEMAS = {

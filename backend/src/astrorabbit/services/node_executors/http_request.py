@@ -1,4 +1,5 @@
 import asyncio
+from http import HTTPStatus
 import random
 
 import httpx
@@ -24,17 +25,19 @@ async def execute_mock_request(config: HttpMockConfig) -> NodeResult[HttpRequest
         k=1,
     )[0]
 
+    try:
+        status_reason = HTTPStatus(config.status_code).phrase
+    except:
+        status_reason = "Custom Status"
+
     success = gamble == "SUCCESS" and 200 <= config.status_code < 300
 
     return NodeResult(
         success=success,
         output=HttpRequestOutput(
             status_code=config.status_code,
-            body={
-                "message:": "Hello from Mock API",
-                "latency:": config.latency,
-                "rolled:": gamble,
-            },
+            status_reason=status_reason,
+            body=config.body,
         ),
     )
 
@@ -54,6 +57,7 @@ async def execute_custom_request(
                 success=False,
                 output=HttpRequestOutput(
                     status_code=status.HTTP_408_REQUEST_TIMEOUT,
+                    status_reason="Request Timeout",
                     body={"error": "Request timed out"},
                 ),
             )
@@ -61,7 +65,9 @@ async def execute_custom_request(
             return NodeResult(
                 success=False,
                 output=HttpRequestOutput(
-                    status_code=status.HTTP_502_BAD_GATEWAY, body={"error": str(err)}
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    status_reason="Bad Gateway",
+                    body={"error": str(err)},
                 ),
             )
 
@@ -74,6 +80,7 @@ async def execute_custom_request(
         success=response.is_success,
         output=HttpRequestOutput(
             status_code=response.status_code,
+            status_reason=response.reason_phrase,
             headers=dict(response.headers),
             body=body,
         ),
@@ -89,4 +96,4 @@ async def execute_request(node: HttpRequestNode) -> NodeResult[HttpRequestOutput
         case "CUSTOM_API":
             return await execute_custom_request(config)
         case _:
-            raise ValueError(f"Unsupported HTTP provider: {node.data.provider}")
+            raise ValueError(f"Unsupported HTTP provider: {config.provider}")

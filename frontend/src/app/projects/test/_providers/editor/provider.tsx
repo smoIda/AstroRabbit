@@ -42,7 +42,7 @@ function editorActions(dispatch: React.Dispatch<ActionEditor>) {
     changeNode: (changes: NodeChange<CanvasNode>[]) =>
       dispatch({ type: "CHANGE_NODE", payload: changes }),
 
-    patchNodeBranding: (nodeId: string, label: string, icon: LucideIcon) =>
+    patchNodeBranding: (nodeId: string, label: string, icon?: LucideIcon) =>
       dispatch({ type: "PATCH_NODE_BRANDING", payload: { id: nodeId, label, icon } }),
 
     patchNodeConfig: (nodeId: string, key: string, value: unknown) =>

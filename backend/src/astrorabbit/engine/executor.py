@@ -6,10 +6,9 @@ from astrorabbit.schemas.executor import ExecutionEvent, ExecutionState
 
 
 class ExecutionManager:
-    def __init__(self):
-        self.queues: dict[str, asyncio.Queue[ExecutionEvent]] = {}
-        self.tasks: dict[str, asyncio.Task[None]] = {}
-        self.states: dict[str, ExecutionState] = {}
+    queues: dict[str, asyncio.Queue[ExecutionEvent]] = {}
+    tasks: dict[str, asyncio.Task[None]] = {}
+    states: dict[str, ExecutionState] = {}
 
     def create_execution(self) -> str:
         execution_id = generate()

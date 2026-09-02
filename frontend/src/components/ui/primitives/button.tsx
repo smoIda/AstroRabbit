@@ -46,7 +46,7 @@ const styles = cva(
 );
 
 type Base = VariantProps<typeof styles> & {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   hoverInset?: keyof typeof hoverInsetStyles;
 };

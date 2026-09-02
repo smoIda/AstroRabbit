@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class DatabaseConfig(BaseModel):
-    database: Literal["MongoDB", "PostgreSQL", "MySQL"]
+    database: Literal["MongoDB", "PostgreSQL", "MySQL"] = "PostgreSQL"
 
 
 class DatabaseData(BaseModel):

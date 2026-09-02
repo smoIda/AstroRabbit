@@ -64,7 +64,10 @@ export const actionEditor = (state: InitialEditor, action: ActionEditor): Initia
         nodes: state.nodes.map((node) => {
           if (node.id !== action.payload.id) return node;
 
-          return patchNode(node, { label: action.payload.label, icon: action.payload.icon });
+          if (action.payload.icon)
+            return patchNode(node, { label: action.payload.label, icon: action.payload.icon });
+
+          return patchNode(node, { label: action.payload.label });
         }),
       };
 
@@ -72,8 +75,7 @@ export const actionEditor = (state: InitialEditor, action: ActionEditor): Initia
       return {
         ...state,
         nodes: state.nodes.map((node) => {
-          if (node.id !== action.payload.id || !Object.hasOwn(node.data.config, action.payload.key))
-            return node;
+          if (node.id !== action.payload.id) return node;
 
           return patchNode(node, {
             config: {

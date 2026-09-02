@@ -4,7 +4,7 @@ import { ClockFading, Code2, FileText, Hash, Link2, List, TrendingDown } from "l
 
 import { HttpRequest } from "@/app/projects/test/_components/canvas/nodes/core/http-request/config";
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/node";
-import { generateHandle } from "@/app/projects/test/_components/canvas/utils";
+import { generateHandle } from "@/app/projects/test/_components/canvas/nodes/base/utils";
 
 const ICONS = {
   HEADERS: List,

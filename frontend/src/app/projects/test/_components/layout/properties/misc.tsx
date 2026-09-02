@@ -1,30 +1,44 @@
 import { Info } from "lucide-react";
 
-import { ConfigFieldMeta } from "@/app/projects/test/_components/canvas/utils";
+import { ConfigFieldMeta, OutputFieldMeta } from "@/app/projects/test/_components/canvas/config";
 
 type Title = {
   label: string;
+  hasData?: boolean;
   info?: string;
 };
 
-export function Title({ label, info }: Title) {
+export function Title({ label, hasData, info }: Title) {
   return (
-    <div title={info} className="flex items-center justify-between">
-      <span className="text-ink text-xs font-semibold">{label}</span>
+    <div className="text-ink flex items-center justify-between">
+      <span className="text-xs font-semibold">{label}</span>
 
-      {info && <Info size={16} className="text-ink" />}
+      {!hasData && info && (
+        <div className="text-ink-soft flex items-center justify-center gap-x-2">
+          <span className="text-xs">{info}</span>
+
+          <Info size={12} />
+        </div>
+      )}
     </div>
   );
 }
 
-const DATA_TYPE: Record<ConfigFieldMeta["widget"], string> = {
+const DATA_TYPE: Record<ConfigFieldMeta["widget"] | OutputFieldMeta["widget"], string> = {
   SELECT: "enum",
+  TABLE: "table",
   RECORD: "object",
   TEXT: "string",
   NUMBER: "number",
   JSON: "json",
+  BOOLEAN: "boolean",
+  NONE: "",
 };
 
-export function WidgetType({ type }: { type: ConfigFieldMeta["widget"] }) {
-  return <span className="absolute -top-5 right-0 text-xs">{DATA_TYPE[type]}</span>;
+export function WidgetType({
+  type,
+}: {
+  type: ConfigFieldMeta["widget"] | OutputFieldMeta["widget"];
+}) {
+  return <span className="text-ink-soft absolute -top-6 right-0 text-xs">{DATA_TYPE[type]}</span>;
 }

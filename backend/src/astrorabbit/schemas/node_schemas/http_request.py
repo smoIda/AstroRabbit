@@ -39,5 +39,6 @@ class HttpRequestOutput(BaseModel):
     status_code: int = Field(
         default=200, ge=100, le=599, serialization_alias="statusCode"
     )
+    status_reason: str = Field(serialization_alias="statusReason")
     headers: dict[str, str] = Field(default_factory=dict)
     body: Any = None

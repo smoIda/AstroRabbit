@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef } from "react";
 
 import { useConnection, useStore } from "@xyflow/react";
 
@@ -13,6 +13,8 @@ import {
   formatDuration,
   getVisibleConfigs,
 } from "@/app/projects/test/_components/canvas/nodes/base/utils";
+import { NodeLabel } from "@/app/projects/test/_components/canvas/nodes/base/label";
+import { useEditorAction } from "@/app/projects/test/_hooks/use-editor";
 
 import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
@@ -23,68 +25,25 @@ import { Button } from "@/components/ui/primitives/button";
 import { cn } from "@/lib/utils/cn";
 import { formatText } from "@/lib/utils/formatText";
 
-function Label(data: BaseNode["data"]) {
-  const [isRenaming, setIsRenaming] = useState(false);
-  const [oldLabel, setOldLabel] = useState(data.label);
-  const [label, setLabel] = useState(data.label);
-
-  const onStart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    setOldLabel(label);
-    setIsRenaming(true);
-  };
-
-  const onCommit = () => {
-    if (label.trim().length === 0) setLabel(oldLabel);
-    else {
-      setLabel(label.trim());
-      setOldLabel(label.trim());
-    }
-    setIsRenaming(false);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-
-    if (e.key === "Enter") onCommit();
-
-    if (e.key === "Escape") {
-      setLabel(oldLabel.trim());
-      setIsRenaming(false);
-    }
-  };
-
-  return isRenaming ? (
-    <input
-      type="text"
-      value={label}
-      maxLength={50}
-      placeholder="Node name"
-      autoFocus
-      onChange={(e) => setLabel(e.target.value)}
-      onBlur={onCommit}
-      onKeyDown={onKeyDown}
-      className="text-ink nopan nodrag mb-1 w-full border-b text-lg font-semibold outline-none"
-    />
-  ) : (
-    <span
-      title={label.trim()}
-      onDoubleClick={(e) => onStart(e)}
-      className="text-ink truncate text-lg font-semibold select-none"
-    >
-      {label}
-    </span>
-  );
-}
-
 export function BaseNode({ id, type, data, selected, className, handles, configIcons }: BaseNode) {
   const NodeIcon = data.icon;
   const StatusIcon = STATUS_ICONS[data.runtime.status].icon;
 
-  const selectedCount = useStore((s) => s.nodes.filter((node) => node.selected).length);
+  const { action: editorAction } = useEditorAction();
 
+  const selectedCount = useStore((s) => s.nodes.filter((node) => node.selected).length);
   const connection = useConnection(); // Detects edges dragging
+
+  const delayRef = useRef<NodeJS.Timeout | null>(null);
+
+  const onLabelChange = useCallback(
+    (newLabel: string) => {
+      if (delayRef.current) clearTimeout(delayRef.current);
+
+      delayRef.current = setTimeout(() => editorAction.patchNodeBranding(id, newLabel), 500);
+    },
+    [id, editorAction],
+  );
 
   return (
     <>
@@ -105,7 +64,7 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
           </div>
 
           <div className="flex w-full min-w-0 flex-col">
-            <Label {...data} />
+            <NodeLabel label={data.label} onChange={onLabelChange} />
 
             <div
               onWheel={(e) => {

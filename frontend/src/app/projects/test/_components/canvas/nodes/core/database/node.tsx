@@ -4,7 +4,7 @@ import { HardDrive } from "lucide-react";
 
 import { Database } from "@/app/projects/test/_components/canvas/nodes/core/database/config";
 import { BaseNode } from "@/app/projects/test/_components/canvas/nodes/base/node";
-import { generateHandle } from "@/app/projects/test/_components/canvas/utils";
+import { generateHandle } from "@/app/projects/test/_components/canvas/nodes/base/utils";
 
 const ICONS = {
   DATABASE: HardDrive,

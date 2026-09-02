@@ -141,7 +141,7 @@ async def execute_node(
     state.executed.add(node.id)
 
     if result is not None:
-        state.output[node.id] = result
+        state.output[node.id] = result.output.body
 
         if not result.success:
             await emit(

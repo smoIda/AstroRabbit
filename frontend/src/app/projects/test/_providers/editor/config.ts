@@ -41,7 +41,7 @@ export type ActionEditor =
   | { type: "PATCH_BADGE"; payload: { nodeId: string; method: "CREATE" | "DELETE"; badge: string } }
   | { type: "CREATE_NODE"; payload: CanvasNode["type"] }
   | { type: "CHANGE_NODE"; payload: NodeChange<CanvasNode>[] }
-  | { type: "PATCH_NODE_BRANDING"; payload: { id: string; label: string; icon: LucideIcon } }
+  | { type: "PATCH_NODE_BRANDING"; payload: { id: string; label: string; icon?: LucideIcon } }
   | { type: "PATCH_NODE_CONFIG"; payload: { id: string; key: string; value: unknown } }
   | {
       type: "PATCH_NODE_EXECUTION";

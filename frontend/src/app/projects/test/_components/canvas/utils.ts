@@ -1,37 +1,51 @@
 import z from "zod";
 
-import { SETTINGS } from "@/app/projects/test/_components/canvas/config";
-import { CanvasNode, NodeData } from "@/app/projects/test/_providers/editor/config";
+import { ConfigFieldMeta, OutputFieldMeta } from "@/app/projects/test/_components/canvas/config";
+import { NodeData } from "@/app/projects/test/_providers/editor/config";
 
-export type ConfigFieldMeta = {
-  widget: "SELECT" | "RECORD" | "TEXT" | "NUMBER" | "JSON";
-  hiddenOnNode?: boolean
+const DEFAULT_CONFIG_FIELD_META: ConfigFieldMeta = {
+  widget: "NONE",
+  hiddenOnNode: false,
+  options: [],
 };
 
 export const nodeConfigRegistry = z.registry<ConfigFieldMeta>();
 
-export function withMeta<T extends z.ZodType>(schema: T, meta: ConfigFieldMeta) {
-  nodeConfigRegistry.add(schema, meta);
+export function withConfigMeta<T extends z.ZodType>(schema: T, meta: Partial<ConfigFieldMeta>) {
+  nodeConfigRegistry.add(schema, { ...DEFAULT_CONFIG_FIELD_META, ...meta });
 
   return schema;
 }
 
-export function generateHandle(type: CanvasNode["type"]) {
-  const sources = Array<"source">(SETTINGS[type].maxOutgoingEdges).fill("source");
-  const targets = Array<"target">(SETTINGS[type].maxIncomingEdges).fill("target");
+const DEFAULT_OUTPUT_FIELD_META: OutputFieldMeta = {
+  widget: "NONE",
+  group: "",
+};
 
-  return [...sources, ...targets];
+export const nodeOutputRegistry = z.registry<OutputFieldMeta>();
+
+export function withOutputMeta<T extends z.ZodType>(schema: T, meta: Partial<OutputFieldMeta>) {
+  nodeOutputRegistry.add(schema, { ...DEFAULT_OUTPUT_FIELD_META, ...meta });
+
+  return schema;
 }
 
 export function resolveConfigSchema(
-  entry: z.ZodObject | Record<string, z.ZodObject> | undefined,
+  entry: z.ZodObject | Record<string, z.ZodObject>,
   config: NodeData["config"],
 ): z.ZodObject | undefined {
-  if (!entry) return undefined;
-
   if (entry instanceof z.ZodObject) return entry;
 
   if ("provider" in config) return entry[String(config.provider)];
 
   return undefined;
+}
+
+export function setNodeDefaults<T extends z.ZodObject>(schema: T) {
+  const res = schema.safeParse({});
+
+  if (!res.success)
+    throw new Error(`setNodeDefaults schema has no valid defaults from ${res.error.message}`);
+
+  return res.data;
 }

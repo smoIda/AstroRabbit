@@ -1,6 +1,9 @@
-import { nodeConfigRegistry, resolveConfigSchema } from "@/app/projects/test/_components/canvas/utils";
+import {
+  nodeConfigRegistry,
+  resolveConfigSchema,
+} from "@/app/projects/test/_components/canvas/utils";
 import { CanvasNode, NodeData } from "@/app/projects/test/_providers/editor/config";
-import { CONFIG_SCHEMA_TYPES } from "@/app/projects/test/_components/canvas/config";
+import { CONFIG_SCHEMA_TYPES, SETTINGS } from "@/app/projects/test/_components/canvas/config";
 
 export function formatDuration(duration: number) {
   if (!Number.isFinite(duration) || duration <= 0) return "--";
@@ -11,19 +14,23 @@ export function formatDuration(duration: number) {
 }
 
 export function getVisibleConfigs(type: CanvasNode["type"], config: NodeData["config"]) {
-  const entry = CONFIG_SCHEMA_TYPES[type];
-  const schema = resolveConfigSchema(entry, config);
-  const shape = schema?.shape
+  const schema = resolveConfigSchema(CONFIG_SCHEMA_TYPES[type], config);
+  const shape = schema?.shape;
 
-  return Object.entries(config).filter(([key]) => {
-    if (!shape) return true;
+  if (!shape) return [];
 
-    const fieldSchema = shape[key];
+  return Object.keys(shape)
+    .filter((k) => {
+      if (!shape || !shape[k]) return false;
 
-    if (!fieldSchema) return true;
+      return !nodeConfigRegistry.get(shape[k])?.hiddenOnNode;
+    })
+    .map((k) => [k, (config as Record<string, unknown>)[k]] as const);
+}
 
-    const meta = nodeConfigRegistry.get(fieldSchema);
+export function generateHandle(type: CanvasNode["type"]) {
+  const sources = Array<"source">(SETTINGS[type].maxOutgoingEdges).fill("source");
+  const targets = Array<"target">(SETTINGS[type].maxIncomingEdges).fill("target");
 
-    return !meta?.hiddenOnNode;
-  });
+  return [...sources, ...targets];
 }

@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useEditorAction, useEditorState } from "@/app/projects/test/_hooks/use-editor";
 import { useEngine } from "@/app/projects/test/_hooks/use-engine";
 import { PropertiesBanner } from "@/app/projects/test/_components/layout/properties/banner/main";
-import { PropertiesInfo } from "@/app/projects/test/_components/layout/properties/info/main";
+import { PropertiesConnections } from "@/app/projects/test/_components/layout/properties/connections/main";
 import { PropertiesInputs } from "@/app/projects/test/_components/layout/properties/inputs/main";
 import { PropertiesOutputs } from "@/app/projects/test/_components/layout/properties/outputs/main";
 import { PropertiesMeta } from "@/app/projects/test/_components/layout/properties/meta/main";
 
 import { Frame } from "@/components/ui/decorations/frame";
+import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -21,6 +22,31 @@ export function Properties() {
   const { execution, node: currentNode } = useEngine();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [width, setWidth] = useState(400);
+
+  const MIN_WIDTH = 320;
+  const MAX_WIDTH = 640;
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    const onMouseMove = (e: MouseEvent) =>
+      setWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, window.innerWidth - e.clientX)));
+
+    const onMouseUp = () => {
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
 
   useEffect(() => {
     if (editorQuery.activeNode && editorQuery.selectionCount === 1) setIsOpen(true);
@@ -36,7 +62,7 @@ export function Properties() {
       )}
     >
       <div className="overflow-hidden">
-        <div className="relative mt-4 mr-4 h-[calc(100%-30px)] w-100">
+        <div style={{ width: `${width}px` }} className="relative mt-4 mr-4 h-[calc(100%-30px)]">
           <Frame label="PROPERTIES">
             {node ? (
               <div className="flex size-full min-h-0 flex-col overflow-hidden">
@@ -49,12 +75,17 @@ export function Properties() {
                   onNodeSkip={currentNode.skip}
                 />
 
-                <div className="custom-scroll min-h-0 space-y-6 overflow-x-hidden overflow-y-auto p-4 text-xs">
-                  <PropertiesInfo />
+                <div className="custom-scroll min-h-0 space-y-8 overflow-x-hidden overflow-y-auto p-4 text-xs">
+                  <PropertiesConnections nodeId={node.id} />
 
-                  <PropertiesInputs node={node} config={node.data.config} action={editorAction} />
+                  <PropertiesInputs
+                    nodeId={node.id}
+                    nodeType={node.type}
+                    config={node.data.config}
+                    onPatch={editorAction.patchNodeConfig}
+                  />
 
-                  <PropertiesOutputs output={node.data.output} />
+                  <PropertiesOutputs nodeType={node.type} output={node.data.output} />
 
                   <PropertiesMeta
                     nodeId={node.id}
@@ -67,6 +98,16 @@ export function Properties() {
               <div>Please select a node</div>
             )}
           </Frame>
+
+          <Button
+            aria-label="resize"
+            variant="no-brackets"
+            onMouseDown={(e) => onMouseDown(e)}
+            className={cn(
+              "absolute top-0 left-0 z-450 flex h-full w-1 cursor-col-resize flex-col items-center justify-center p-0",
+              "hover:bg-ink active:bg-ink transition-colors",
+            )}
+          />
         </div>
       </div>
     </aside>
