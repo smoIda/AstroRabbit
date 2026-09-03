@@ -27,6 +27,7 @@ const commonConfig = z.object({
   }),
   body: withConfigMeta(z.json().default({ message: "Hello World" }), {
     widget: "JSON",
+    hiddenWhen: (config) => ["GET", "DELETE", "HEAD"].includes(String(config.method)),
   }),
 });
 

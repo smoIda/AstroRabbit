@@ -18,7 +18,7 @@ export function TextInput({ value, onChange }: ConfigWidget["TEXT"]) {
           setText(e.target.value);
           onChange(e.target.value);
         }}
-        className="bg-ink-soft/5 text-ink outline-ink w-full p-2 focus:outline"
+        className="bg-ink-soft/5 hover:outline text-ink w-full p-2 focus:outline"
       />
 
       <WidgetType type="TEXT" />

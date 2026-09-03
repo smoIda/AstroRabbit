@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+
+import { MousePointerClick } from "lucide-react";
 
 import { useEditorAction, useEditorState } from "@/app/projects/test/_hooks/use-editor";
 import { useEngine } from "@/app/projects/test/_hooks/use-engine";
@@ -14,12 +16,15 @@ import { Frame } from "@/components/ui/decorations/frame";
 import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
+import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 
 export function Properties() {
   const { query: editorQuery } = useEditorState();
   const { action: editorAction } = useEditorAction();
 
   const { execution, node: currentNode } = useEngine();
+
+  const { state: executorState } = useExecutor();
 
   const [isOpen, setIsOpen] = useState(false);
   const [width, setWidth] = useState(400);
@@ -48,11 +53,11 @@ export function Properties() {
     window.addEventListener("mouseup", onMouseUp);
   };
 
-  useEffect(() => {
-    if (editorQuery.activeNode && editorQuery.selectionCount === 1) setIsOpen(true);
-  }, [editorQuery.activeNode, editorQuery.selectionCount]);
-
   const node = editorQuery.activeNode;
+
+  useEffect(() => {
+    if (node?.id && editorQuery.selectionCount === 1) setIsOpen(true);
+  }, [node?.id, editorQuery.selectionCount]);
 
   return (
     <aside
@@ -71,11 +76,14 @@ export function Properties() {
                   type={node.type}
                   icon={node.data.icon}
                   label={node.data.label}
+                  executorStatus={executorState.status}
+                  onClose={() => setIsOpen(false)}
                   onExecute={execution.execute}
                   onNodeSkip={currentNode.skip}
+                  onDelete={editorAction.deleteNode}
                 />
 
-                <div className="custom-scroll min-h-0 space-y-8 overflow-x-hidden overflow-y-auto p-4 text-xs">
+                <div className="custom-scroll h-full min-h-0 space-y-8 overflow-x-hidden overflow-y-auto p-4 text-xs">
                   <PropertiesConnections nodeId={node.id} />
 
                   <PropertiesInputs
@@ -87,21 +95,22 @@ export function Properties() {
 
                   <PropertiesOutputs nodeType={node.type} output={node.data.output} />
 
-                  <PropertiesMeta
-                    nodeId={node.id}
-                    runtime={node.data.runtime}
-                    onDelete={(nodeId) => editorAction.deleteNode(nodeId)}
-                  />
+                  <PropertiesMeta nodeId={node.id} runtime={node.data.runtime} />
                 </div>
               </div>
             ) : (
-              <div>Please select a node</div>
+              <div className="flex h-full flex-col items-center justify-center gap-y-2 p-4 text-center">
+                <MousePointerClick size={28} className="text-ink-soft/60" />
+
+                <span className="text-ink-soft text-xs font-medium tracking-wider uppercase">
+                  Select a node to inspect properties
+                </span>
+              </div>
             )}
           </Frame>
 
           <Button
             aria-label="resize"
-            variant="no-brackets"
             onMouseDown={(e) => onMouseDown(e)}
             className={cn(
               "absolute top-0 left-0 z-450 flex h-full w-1 cursor-col-resize flex-col items-center justify-center p-0",

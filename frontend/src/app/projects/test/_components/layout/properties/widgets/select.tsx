@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Check, ChevronDown } from "lucide-react";
+import { CheckCheck, ChevronDown } from "lucide-react";
 
 import { ConfigWidget } from "@/app/projects/test/_components/layout/properties/inputs/config";
 import { WidgetType } from "@/app/projects/test/_components/layout/properties/misc";
@@ -31,9 +31,9 @@ export function SelectInput({ value, options, onChange }: ConfigWidget["SELECT"]
   return (
     <div ref={dropdownRef} className="relative">
       <Button
-        variant="no-brackets"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="bg-ink-soft/5 outline-ink w-full justify-between py-2 text-xs focus:outline"
+        size="md"
+        className="bg-ink-soft/5 text-ink w-full justify-between py-2 hover:outline focus:outline"
       >
         <span>{formatText(chosen)}</span>
 
@@ -41,7 +41,7 @@ export function SelectInput({ value, options, onChange }: ConfigWidget["SELECT"]
       </Button>
 
       {isOpen && (
-        <ul className="outline-ink absolute z-10 mt-px max-h-60 w-full overflow-auto bg-white shadow-lg outline focus:outline-none">
+        <ul className="absolute z-10 mt-px max-h-60 w-full overflow-auto bg-white shadow-lg outline focus:outline-none">
           {options.map((option) => (
             <li
               tabIndex={0}
@@ -57,7 +57,7 @@ export function SelectInput({ value, options, onChange }: ConfigWidget["SELECT"]
                 {formatText(option)}
               </span>
 
-              {option === chosen && <Check size={16} className="text-accent-ink" />}
+              {option === chosen && <CheckCheck size={16} className="text-accent-ink" />}
             </li>
           ))}
         </ul>

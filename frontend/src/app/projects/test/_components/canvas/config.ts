@@ -43,7 +43,7 @@ export const NODE_DEFAULTS: {
   },
 
   DATABASE: {
-    label: "/users",
+    label: "Database Node",
     icon: Database,
     badge: [],
 
@@ -72,15 +72,17 @@ export const OUTPUT_SCHEMA_TYPES: Record<
   DATABASE: DATABASE_SCHEMAS.OUTPUT,
 };
 
-type WidgetType = "SELECT" | "RECORD" | "TEXT" | "NUMBER" | "JSON" | "TABLE" | "BOOLEAN" | "NONE";
+type WidgetType =
+  "SELECT" | "RECORD" | "TEXT" | "NUMBER" | "JSON" | "TABLE" | "MULTI_SELECT" | "NONE";
 
 export type ConfigFieldMeta = Readonly<{
   widget: Exclude<WidgetType, "TABLE">;
-  hiddenOnNode: boolean;
   options: readonly string[];
+  hiddenOnNode: boolean;
+  hiddenWhen: (config: Record<string, unknown>) => boolean;
 }>;
 
 export type OutputFieldMeta = Readonly<{
-  widget: Exclude<WidgetType, "SELECT">;
+  widget: Exclude<WidgetType, "SELECT" | "MULTI_SELECT">;
   group: string;
 }>;

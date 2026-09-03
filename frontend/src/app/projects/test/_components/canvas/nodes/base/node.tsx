@@ -15,6 +15,7 @@ import {
 } from "@/app/projects/test/_components/canvas/nodes/base/utils";
 import { NodeLabel } from "@/app/projects/test/_components/canvas/nodes/base/label";
 import { useEditorAction } from "@/app/projects/test/_hooks/use-editor";
+import { toJSON, toString } from "@/app/projects/test/_components/layout/properties/utils";
 
 import { Diamond } from "@/components/ui/decorations/diamond";
 import { Shadow } from "@/components/ui/decorations/shadow";
@@ -32,6 +33,7 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
   const { action: editorAction } = useEditorAction();
 
   const selectedCount = useStore((s) => s.nodes.filter((node) => node.selected).length);
+
   const connection = useConnection(); // Detects edges dragging
 
   const delayRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,14 +82,17 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
               }}
               className="nowheel flex w-full scrollbar-none items-center gap-x-2 overflow-x-auto"
             >
-              <Badge key={`${id}-badge`} color="accent-soft">
-                {formatText(type)}
-              </Badge>
+              <Badge color="accent-soft">{formatText(type)}</Badge>
 
               {data.badge.length > 0 &&
                 data.badge.map((badge) => {
                   return (
-                    <Badge title={badge} className="group-hover/badge:opacity-30" color="accent">
+                    <Badge
+                      key={`${id}-badge`}
+                      title={badge}
+                      className="group-hover/badge:opacity-30"
+                      color="accent"
+                    >
                       {badge}
                     </Badge>
                   );
@@ -98,7 +103,6 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
-                variant="no-brackets"
                 size="icon"
                 className="nodrag nopan p-0"
               >
@@ -128,16 +132,14 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
                   ];
 
                 const formattedValue =
-                  typeof value === "object" && value !== null
-                    ? JSON.stringify(value)
-                    : String(value ?? "");
+                  typeof value === "object" && value !== null ? toJSON(value) : toString(value);
 
                 return (
                   <div key={key} className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-x-2">
                       {Icon && <Icon size={12} strokeWidth={2} className="text-ink-soft/60" />}
                       <span className="text-xs font-semibold uppercase">
-                        {key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/_/g, " ")}
+                        {formatText(key)}
                       </span>
                     </div>
 

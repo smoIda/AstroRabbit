@@ -28,10 +28,10 @@ function sameRows(a: Record<string, unknown>, b: Record<string, unknown>) {
 }
 
 function toRows(value: Record<string, unknown>): Row[] {
-  return Object.entries(value).map(([key, value]) => ({
+  return Object.entries(value).map(([k, v]) => ({
     id: nanoid(),
-    key,
-    value: String(value ?? ""),
+    key: k,
+    value: String(v ?? ""),
   }));
 }
 
@@ -85,20 +85,20 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
         return (
           <div
             key={r.id}
-            className="group relative flex items-center justify-center gap-x-2 transition-[padding] duration-200 hover:pr-10"
+            className="group relative flex items-center justify-center gap-x-2 transition-[padding] duration-200 hover:pr-10 active:pr-10"
           >
             <input
               placeholder="Key"
               value={r.key}
               onChange={(e) => onRowChange(r.id, "key", e.target.value)}
-              className="bg-ink-soft/5 text-ink outline-ink min-w-20 flex-1 p-2 focus:outline"
+              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
             />
 
             <input
               placeholder="Value"
               value={r.value}
               onChange={(e) => onRowChange(r.id, "value", e.target.value)}
-              className="bg-ink-soft/5 text-ink outline-ink min-w-20 flex-1 p-2 focus:outline"
+              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
             />
 
             <Button
@@ -107,11 +107,11 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
 
                 onDeleteRow(r.id);
               }}
-              variant="no-brackets"
+              variant="destructive"
               className={cn(
-                "text-ink bg-ink-soft/5 absolute right-0 p-2 opacity-0",
-                "hover:bg-accent-ink/10 hover:text-accent-ink group-hover:opacity-100",
-                "cursor-pointer transition-opacity duration-200",
+                "bg-ink-soft/5 absolute right-0 opacity-0",
+                "active:bg-destructive-ink/10 hover:bg-destructive-ink/10 group-hover:opacity-100 group-active:opacity-100",
+                "active:scale-90",
               )}
               size="icon"
               title="Delete row"
@@ -125,9 +125,9 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
 
       <Button
         onClick={onAddRow}
-        variant="no-brackets"
         size="md"
-        className="border-ink/20 text-ink/20 hover:border-accent-ink hover:text-accent-ink w-full border border-dashed py-1 transition-colors"
+        variant="ghost"
+        className="w-full border py-1"
       >
         <Plus className="size-4" />
       </Button>

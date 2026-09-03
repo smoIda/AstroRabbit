@@ -1,4 +1,3 @@
-import { BooleanOutput } from "@/app/projects/test/_components/layout/properties/widgets/boolean";
 import { JsonOutput } from "@/app/projects/test/_components/layout/properties/widgets/json";
 import { NumberOutput } from "@/app/projects/test/_components/layout/properties/widgets/number";
 import { RecordOutput } from "@/app/projects/test/_components/layout/properties/widgets/record";
@@ -10,7 +9,6 @@ export type OutputWidget = {
   TEXT: { value: string };
   NUMBER: { value: number };
   JSON: { value: string };
-  BOOLEAN: { value: boolean };
 };
 
 export const OUTPUT_WIDGET_TYPES: {
@@ -21,5 +19,4 @@ export const OUTPUT_WIDGET_TYPES: {
   TEXT: TextOutput,
   NUMBER: NumberOutput,
   JSON: JsonOutput,
-  BOOLEAN: BooleanOutput,
 };

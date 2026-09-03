@@ -13,6 +13,7 @@ import { CONFIG_WIDGET_TYPES } from "@/app/projects/test/_components/layout/prop
 import { Title } from "@/app/projects/test/_components/layout/properties/misc";
 import { CanvasNode, NodeData } from "@/app/projects/test/_providers/editor/config";
 import {
+  toArray,
   toJSON,
   toNumber,
   toObject,
@@ -44,6 +45,15 @@ function Widget({ meta, value, onChange }: Widget) {
       return (
         <CONFIG_WIDGET_TYPES.SELECT
           value={toString(value)}
+          options={meta.options}
+          onChange={onChange}
+        />
+      );
+
+    case "MULTI_SELECT":
+      return (
+        <CONFIG_WIDGET_TYPES.MULTI_SELECT
+          value={toArray(value)}
           options={meta.options}
           onChange={onChange}
         />
@@ -94,6 +104,8 @@ export function PropertiesInputs({ nodeId, nodeType, config, onPatch }: Properti
           const meta = nodeConfigRegistry.get(fieldSchema);
 
           if (!meta) return null;
+
+          if (meta.hiddenWhen(config)) return null;
 
           return (
             <div key={key} className="relative space-y-2 pl-4">

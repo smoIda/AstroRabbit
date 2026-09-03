@@ -33,9 +33,8 @@ export function JsonInput({ value, onChange }: ConfigWidget["JSON"]) {
   useEffect(() => setText(value), [value]);
 
   return (
-    <div className="group bg-ink-soft/5 outline-ink relative focus-within:outline">
+    <div className="group bg-ink-soft/5 relative focus-within:outline hover:outline">
       <Button
-        variant="no-brackets"
         size="icon"
         aria-label="Copy"
         onMouseDown={(e) => e.preventDefault()}
@@ -47,12 +46,12 @@ export function JsonInput({ value, onChange }: ConfigWidget["JSON"]) {
       </Button>
 
       <textarea
-        value={text}
+        value={text || "{}"}
         onChange={(e) => setText(e.target.value)}
         onBlur={(e) => onFormat(e.target.value)}
         placeholder="Value"
         spellCheck={false}
-        className="custom-scroll text-ink overflow-x-hiddenoverflow-y-auto field-sizing-content size-full max-h-80 min-h-20 resize-none p-2 pr-8 outline-none"
+        className="custom-scroll text-ink field-sizing-content size-full max-h-80 min-h-20 resize-none overflow-x-hidden overflow-y-auto p-2 pr-8 outline-none"
       />
 
       <WidgetType type="JSON" />
@@ -71,9 +70,8 @@ export function JsonOutput({ value }: OutputWidget["JSON"]) {
   };
 
   return (
-    <div className="group bg-ink-soft/5 outline-ink relative focus-within:outline">
+    <div className="bg-ink-soft/5 relative focus-within:outline">
       <Button
-        variant="no-brackets"
         size="icon"
         aria-label="Copy"
         onMouseDown={(e) => e.preventDefault()}

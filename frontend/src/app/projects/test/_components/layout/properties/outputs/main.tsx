@@ -10,6 +10,7 @@ import {
 import { nodeOutputRegistry } from "@/app/projects/test/_components/canvas/utils";
 import { OUTPUT_WIDGET_TYPES } from "@/app/projects/test/_components/layout/properties/outputs/config";
 import {
+  toJSON,
   toNumber,
   toObject,
   toString,
@@ -45,7 +46,7 @@ function Widget({ meta, value }: Widget) {
       return <OUTPUT_WIDGET_TYPES.NUMBER value={toNumber(value)} />;
 
     case "JSON":
-      return <OUTPUT_WIDGET_TYPES.JSON value={JSON.stringify(value, null, 2)} />;
+      return <OUTPUT_WIDGET_TYPES.JSON value={toJSON(value)} />;
   }
 }
 

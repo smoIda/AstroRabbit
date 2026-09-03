@@ -19,28 +19,44 @@ const hoverInsetStyles = {
 
 const styles = cva(
   [
-    "text-ink relative inline-flex cursor-pointer items-center justify-center",
-    "disabled:text-ink-soft disabled:cursor-not-allowed",
+    "relative inline-flex cursor-pointer items-center justify-center",
+    "text-ink-soft hover:text-ink active:text-ink active:scale-[0.98]",
+    "transition-[color,background-color,border-color,opacity,scale] duration-200",
+    "disabled:text-ink-soft disabled:pointer-events-none disabled:opacity-60",
   ],
 
   {
     variants: {
       variant: {
-        normal: "group/btn",
-        "no-brackets": "m-0",
+        normal: "",
+        destructive: "hover:text-destructive-ink active:text-destructive-ink",
+        ghost:
+          "border-2 border-ink/20 text-ink/20 hover:border-ink active:border-ink border-dashed",
       },
 
       size: {
-        sm: "px-2 py-1 text-[14px]",
-        md: "px-3 py-1 text-[16px]",
-        lg: "px-4 py-1.25 text-[18px]",
-        icon: "p-1.5",
+        sm: "px-2 py-1 text-[10px]/none",
+        md: "px-2.5 py-1.5 text-[12px]/none",
+        lg: "px-3 py-2 text-[14px]/none",
+        icon: "p-1.5 text-ink-soft/60",
+      },
+
+      flush: {
+        true: "p-0 m-0",
+        false: "",
+      },
+
+      brackets: {
+        true: "group/btn",
+        false: "",
       },
     },
 
     defaultVariants: {
       variant: "normal",
       size: "sm",
+      flush: false,
+      brackets: false,
     },
   },
 );
@@ -76,17 +92,19 @@ function extract<T extends ButtonProps>({
   variant,
   size,
   hoverInset,
+  flush,
+  brackets,
   className,
   ...props
 }: T) {
   const safeSize = !size || size === "icon" ? "sm" : size;
 
-  const classes = cn(styles({ variant, size, className }));
+  const classes = cn(styles({ size, variant, flush, brackets, className }));
 
   const content = (
     <>
       {children}
-      {variant !== "no-brackets" && (
+      {brackets && (
         <div
           className={cn(
             "absolute inset-0 transition-[inset] duration-100",

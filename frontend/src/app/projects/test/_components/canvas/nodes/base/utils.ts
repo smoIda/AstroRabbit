@@ -21,9 +21,13 @@ export function getVisibleConfigs(type: CanvasNode["type"], config: NodeData["co
 
   return Object.keys(shape)
     .filter((k) => {
-      if (!shape || !shape[k]) return false;
+      const fieldSchema = shape[k];
 
-      return !nodeConfigRegistry.get(shape[k])?.hiddenOnNode;
+      if (!fieldSchema) return false;
+
+      const meta = nodeConfigRegistry.get(fieldSchema);
+
+      return !meta?.hiddenOnNode && !meta?.hiddenWhen(config);
     })
     .map((k) => [k, (config as Record<string, unknown>)[k]] as const);
 }

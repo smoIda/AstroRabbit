@@ -33,32 +33,32 @@ export type NodeStatus = "IDLE" | "RUNNING" | "SUCCESS" | "SKIPPED" | "ERROR";
 export const STATUS_ICONS: Record<NodeStatus, { icon: LucideIcon; color: string; bg: string }> = {
   IDLE: {
     icon: SquareDashed,
-    color: "text-slate-600",
-    bg: "bg-slate-500/10",
+    color: "text-ink",
+    bg: "bg-ink/10",
   },
 
   RUNNING: {
     icon: Loader2,
-    color: "text-blue-600",
-    bg: "bg-blue-500/10",
+    color: "text-info-ink",
+    bg: "bg-info-ink/10",
   },
 
   SUCCESS: {
     icon: CheckCheck,
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10",
+    color: "text-success-ink",
+    bg: "bg-success-ink/10",
   },
 
   SKIPPED: {
     icon: FastForward,
-    color: "text-amber-600",
-    bg: "bg-amber-500/10",
+    color: "text-warning-ink",
+    bg: "bg-warning-ink/10",
   },
 
   ERROR: {
     icon: Ban,
-    color: "text-rose-600",
-    bg: "bg-rose-500/10",
+    color: "text-destructive-ink",
+    bg: "bg-destructive-ink/10",
   },
 };
 

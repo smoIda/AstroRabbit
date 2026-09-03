@@ -26,13 +26,14 @@ export function Title({ label, hasData, info }: Title) {
 
 const DATA_TYPE: Record<ConfigFieldMeta["widget"] | OutputFieldMeta["widget"], string> = {
   SELECT: "enum",
+  MULTI_SELECT: "array",
   TABLE: "table",
   RECORD: "object",
   TEXT: "string",
   NUMBER: "number",
   JSON: "json",
-  BOOLEAN: "boolean",
-  NONE: "",
+
+  NONE: "void",
 };
 
 export function WidgetType({

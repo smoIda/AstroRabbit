@@ -3,12 +3,19 @@ import { RecordInput } from "@/app/projects/test/_components/layout/properties/w
 import { TextInput } from "@/app/projects/test/_components/layout/properties/widgets/text";
 import { NumberInput } from "@/app/projects/test/_components/layout/properties/widgets/number";
 import { JsonInput } from "@/app/projects/test/_components/layout/properties/widgets/json";
+import { MultiSelectInput } from "@/app/projects/test/_components/layout/properties/widgets/multi-select";
 
 export type ConfigWidget = {
   SELECT: {
     value: string;
     options: readonly string[];
     onChange: (v: unknown) => void;
+  };
+
+  MULTI_SELECT: {
+    value: string[];
+    options: readonly string[];
+    onChange: (v: string[]) => void;
   };
 
   RECORD: {
@@ -36,6 +43,7 @@ export const CONFIG_WIDGET_TYPES: {
   [K in keyof ConfigWidget]: React.ComponentType<ConfigWidget[K]>;
 } = {
   SELECT: SelectInput,
+  MULTI_SELECT: MultiSelectInput,
   RECORD: RecordInput,
   TEXT: TextInput,
   NUMBER: NumberInput,

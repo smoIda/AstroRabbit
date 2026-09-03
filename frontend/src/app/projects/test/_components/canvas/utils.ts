@@ -5,8 +5,9 @@ import { NodeData } from "@/app/projects/test/_providers/editor/config";
 
 const DEFAULT_CONFIG_FIELD_META: ConfigFieldMeta = {
   widget: "NONE",
-  hiddenOnNode: false,
   options: [],
+  hiddenOnNode: false,
+  hiddenWhen: () => false,
 };
 
 export const nodeConfigRegistry = z.registry<ConfigFieldMeta>();

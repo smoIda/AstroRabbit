@@ -45,9 +45,8 @@ export function MainFrame({ children, className, excludePath, label }: MainFrame
       label={
         <Button
           data-button="route"
-          variant="no-brackets"
           href={targetHref}
-          className="font-headline pointer-events-auto shrink-0 cursor-pointer px-4 text-2xl tracking-[0.04em]! uppercase transition-[padding] hover:px-2 active:px-2"
+          className="font-headline pointer-events-auto shrink-0 cursor-pointer px-4 text-ink text-2xl tracking-[0.04em]! uppercase transition-[padding] hover:px-2 active:px-2"
         >
           {displayLabel}
         </Button>
