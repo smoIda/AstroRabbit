@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { LucideIcon } from "lucide-react";
-
 type NodeLabel = {
   label: string;
-  onChange: (v: string) => void;
+  isRenaming: boolean;
+  onRenamingChange: (value: boolean) => void;
+  onChange: (value: string) => void;
 };
 
-export function NodeLabel({ label, onChange }: NodeLabel) {
-  const [isRenaming, setIsRenaming] = useState(false);
+export function NodeLabel({ label, isRenaming, onRenamingChange, onChange }: NodeLabel) {
   const [draft, setDraft] = useState(label);
 
   useEffect(() => setDraft(label), [label]);
@@ -17,14 +16,14 @@ export function NodeLabel({ label, onChange }: NodeLabel) {
     e.stopPropagation();
 
     setDraft(label);
-    setIsRenaming(true);
+    onRenamingChange(true);
   };
 
   const onCommit = () => {
     if (draft.trim().length === 0) setDraft(label);
     else if (draft.trim() !== label) onChange(draft.trim());
 
-    setIsRenaming(false);
+    onRenamingChange(false);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -34,7 +33,7 @@ export function NodeLabel({ label, onChange }: NodeLabel) {
 
     if (e.key === "Escape") {
       setDraft(label);
-      setIsRenaming(false);
+      onRenamingChange(false);
     }
   };
 
@@ -54,7 +53,7 @@ export function NodeLabel({ label, onChange }: NodeLabel) {
     <span
       title={label}
       onDoubleClick={(e) => onStart(e)}
-      className="text-ink truncate text-lg font-semibold select-none"
+      className="text-ink truncate text-lg font-semibold"
     >
       {label}
     </span>

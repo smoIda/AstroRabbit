@@ -1,13 +1,11 @@
-import { Clock, Trash2 } from "lucide-react";
+import { Clock } from "lucide-react";
 
 import { NodeData } from "@/app/projects/test/_providers/editor/config";
 import { Title } from "@/app/projects/test/_components/layout/properties/misc";
 import { formatDuration } from "@/app/projects/test/_components/canvas/nodes/base/utils";
-import { EditorActionContextValue } from "@/app/projects/test/_providers/editor/provider";
-import { Badge } from "@/components/ui/primitives/badge";
 import { STATUS_ICONS } from "@/app/projects/test/_components/canvas/nodes/base/config";
 
-import { Button } from "@/components/ui/primitives/button";
+import { Badge } from "@/components/ui/primitives/badge";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -52,7 +50,7 @@ export function PropertiesMeta({ nodeId, runtime }: PropertiesMeta) {
         <div className="flex items-center gap-2">
           <span>{formatDuration(runtime.duration)}</span>
 
-          <Clock size={16} className="text-ink-soft/60" />
+          <Clock size={16} className="text-ink/40" />
         </div>
       </div>
     </div>

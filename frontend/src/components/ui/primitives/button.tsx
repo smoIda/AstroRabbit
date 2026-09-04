@@ -20,9 +20,9 @@ const hoverInsetStyles = {
 const styles = cva(
   [
     "relative inline-flex cursor-pointer items-center justify-center",
-    "text-ink-soft hover:text-ink active:text-ink active:scale-[0.98]",
+    "hover:text-ink active:scale-[0.98]",
     "transition-[color,background-color,border-color,opacity,scale] duration-200",
-    "disabled:text-ink-soft disabled:pointer-events-none disabled:opacity-60",
+    "disabled:text-ink disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none",
   ],
 
   {
@@ -30,15 +30,14 @@ const styles = cva(
       variant: {
         normal: "",
         destructive: "hover:text-destructive-ink active:text-destructive-ink",
-        ghost:
-          "border-2 border-ink/20 text-ink/20 hover:border-ink active:border-ink border-dashed",
+        border: "border-2 border-ink/20 hover:border-ink active:border-ink border-dashed",
       },
 
       size: {
         sm: "px-2 py-1 text-[10px]/none",
         md: "px-2.5 py-1.5 text-[12px]/none",
         lg: "px-3 py-2 text-[14px]/none",
-        icon: "p-1.5 text-ink-soft/60",
+        icon: "p-1.5 text-ink/40",
       },
 
       flush: {

@@ -85,20 +85,20 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
         return (
           <div
             key={r.id}
-            className="group relative flex items-center justify-center gap-x-2 transition-[padding] duration-200 hover:pr-10 active:pr-10"
+            className="group relative flex items-center justify-center gap-x-2 transition-[padding] duration-200 hover:pr-9 active:pr-9"
           >
             <input
               placeholder="Key"
               value={r.key}
               onChange={(e) => onRowChange(r.id, "key", e.target.value)}
-              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
+              className="bg-ink/2 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
             />
 
             <input
               placeholder="Value"
               value={r.value}
               onChange={(e) => onRowChange(r.id, "value", e.target.value)}
-              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
+              className="bg-ink/2 text-ink min-w-20 flex-1 p-2 hover:outline focus:outline"
             />
 
             <Button
@@ -109,8 +109,8 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
               }}
               variant="destructive"
               className={cn(
-                "bg-ink-soft/5 absolute right-0 opacity-0",
-                "active:bg-destructive-ink/10 hover:bg-destructive-ink/10 group-hover:opacity-100 group-active:opacity-100",
+                "absolute right-0 opacity-0",
+                "group-hover:opacity-100 group-active:opacity-100",
                 "active:scale-90",
               )}
               size="icon"
@@ -123,12 +123,7 @@ export function RecordInput({ value, onChange }: ConfigWidget["RECORD"]) {
         );
       })}
 
-      <Button
-        onClick={onAddRow}
-        size="md"
-        variant="ghost"
-        className="w-full border py-1"
-      >
+      <Button onClick={onAddRow} size="md" variant="border" className="w-full border py-1">
         <Plus className="size-4" />
       </Button>
 
@@ -147,13 +142,13 @@ export function RecordOutput({ value }: OutputWidget["RECORD"]) {
           <input
             readOnly
             placeholder="Key"
-            className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 outline-none"
+            className="bg-ink/2 text-ink min-w-20 flex-1 p-2 outline-none"
           />
 
           <input
             readOnly
             placeholder="Value"
-            className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 outline-none"
+            className="bg-ink/2 text-ink min-w-20 flex-1 p-2 outline-none"
           />
         </div>
       ) : (
@@ -162,14 +157,14 @@ export function RecordOutput({ value }: OutputWidget["RECORD"]) {
             <input
               readOnly
               value={key}
-              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 outline-none"
+              className="bg-ink/2 text-ink min-w-20 flex-1 p-2 outline-none"
             />
 
             <input
               readOnly
               value={String(value ?? "")}
               placeholder="Value"
-              className="bg-ink-soft/5 text-ink min-w-20 flex-1 p-2 outline-none"
+              className="bg-ink/2 text-ink min-w-20 flex-1 p-2 outline-none"
             />
           </div>
         ))

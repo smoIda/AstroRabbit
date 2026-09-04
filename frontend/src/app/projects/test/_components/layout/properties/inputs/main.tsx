@@ -109,7 +109,7 @@ export function PropertiesInputs({ nodeId, nodeType, config, onPatch }: Properti
 
           return (
             <div key={key} className="relative space-y-2 pl-4">
-              <Diamond borderColor="black-soft" className="absolute top-1.25 left-0 opacity-40" />
+              <Diamond borderColor="black" className="absolute top-1.25 left-0" />
 
               <Badge className={cn("border-0", randomBadgeColor(key))} size="md">
                 {formatText(key)}

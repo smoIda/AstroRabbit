@@ -37,7 +37,7 @@ export function CustomConnectionLine({
     <g>
       <path
         fill="none"
-        stroke="#a1a1aa"
+        stroke="#16161a40"
         strokeWidth={2}
         className="animated"
         d={edgePath}

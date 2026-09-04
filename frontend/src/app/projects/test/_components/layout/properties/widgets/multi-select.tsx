@@ -33,10 +33,10 @@ export function MultiSelectInput({ value, options, onChange }: ConfigWidget["MUL
             key={i} // option isnt guaranteed to be unique
             onClick={() => onSelect(option)}
             size="md"
-            variant="ghost"
+            variant="border"
             className={cn(
               "w-full border-none py-2 outline outline-dashed",
-              isChosen && "text-ink bg-ink-soft/5 outline-solid",
+              isChosen && "text-ink bg-ink/2 outline-solid",
             )}
           >
             <span>{option}</span>

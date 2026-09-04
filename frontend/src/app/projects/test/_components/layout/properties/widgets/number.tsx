@@ -31,7 +31,7 @@ export function NumberInput({ value, onChange }: ConfigWidget["NUMBER"]) {
           if (Number.isFinite(Number(val))) onChange(Number(val));
         }}
         className={cn(
-          "bg-ink-soft/5 text-ink min-w-20 flex-1 p-2",
+          "bg-ink/2 text-ink min-w-20 flex-1 p-2",
           "hover:outline focus:outline",
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
         )}
@@ -44,10 +44,10 @@ export function NumberInput({ value, onChange }: ConfigWidget["NUMBER"]) {
 
 export function NumberOutput({ value }: OutputWidget["NUMBER"]) {
   return (
-    <div className="bg-ink-soft/5 relative">
+    <div className="relative">
       <input
         tabIndex={-1}
-        className="text-ink p-2 outline-none select-all"
+        className="text-ink bg-ink/2 w-full p-2 outline-none select-all"
         value={value}
         readOnly
       />

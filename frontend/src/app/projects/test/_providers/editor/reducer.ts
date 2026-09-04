@@ -14,6 +14,8 @@ import {
   patchEdge,
   patchNode,
 } from "@/app/projects/test/_providers/editor/utils";
+import { setNodeDefaults } from "@/app/projects/test/_components/canvas/utils";
+import { NODE_DEFAULTS } from "@/app/projects/test/_components/canvas/config";
 
 export const initialEditor: InitialEditor = {
   tool: "SELECT",
@@ -23,6 +25,18 @@ export const initialEditor: InitialEditor = {
 
 export const actionEditor = (state: InitialEditor, action: ActionEditor): InitialEditor => {
   switch (action.type) {
+    case "RESET_RUNTIME":
+      return {
+        ...state,
+        nodes: state.nodes.map((node) =>
+          patchNode(node, {
+            runtime: { status: "IDLE", duration: 0 },
+            output: NODE_DEFAULTS[node.type].output,
+          }),
+        ),
+        edges: state.edges.map((edge) => patchEdge(edge, { status: "IDLE" })),
+      };
+
     case "SELECT_TOOL":
       return {
         ...state,

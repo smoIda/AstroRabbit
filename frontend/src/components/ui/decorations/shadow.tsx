@@ -5,16 +5,17 @@ const styles = cva("absolute top-1/2 left-1/2 -translate-1/2 -z-50 size-full", {
   variants: {
     color: {
       black: "bg-ink",
-      "black-soft": "bg-ink-soft",
       white: "bg-white-ink",
-      "white-soft": "bg-white-ink-soft",
       accent: "bg-accent-ink",
-      "accent-soft": "bg-accent-ink-soft",
+      info: "bg-info-ink",
+      success: "bg-success-ink",
+      destructive: "bg-destructive-ink",
+      warning: "bg-warning-ink",
     },
   },
 
   defaultVariants: {
-    color: "white-soft",
+    color: "black",
   },
 });
 
@@ -24,14 +25,7 @@ type Shadow = Omit<React.ComponentPropsWithoutRef<"span">, "children"> &
     opacity?: number;
   };
 
-export function Shadow({
-  color,
-  spread = 16,
-  opacity = 40,
-  style,
-  className,
-  ...props
-}: Shadow) {
+export function Shadow({ color, spread = 16, opacity = 10, style, className, ...props }: Shadow) {
   return (
     <div
       style={

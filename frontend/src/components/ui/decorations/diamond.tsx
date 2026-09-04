@@ -15,20 +15,22 @@ const styles = cva(
 
       backgroundColor: {
         black: "bg-ink",
-        "black-soft": "bg-ink-soft",
         white: "bg-white-ink",
-        "white-soft": "bg-white-ink-soft",
         accent: "bg-accent-ink",
-        "accent-soft": "bg-accent-ink-soft",
+        info: "bg-info-ink",
+        success: "bg-success-ink",
+        destructive: "bg-destructive-ink",
+        warning: "bg-warning-ink",
       },
 
       borderColor: {
         black: "border-ink",
-        "black-soft": "border-ink-soft",
         white: "border-white-ink",
-        "white-soft": "border-white-ink-soft",
         accent: "border-accent-ink",
-        "accent-soft": "border-accent-ink-soft",
+        info: "border-info-ink",
+        success: "border-success-ink",
+        destructive: "border-destructive-ink",
+        warning: "border-warning-ink",
       },
 
       size: {
@@ -48,10 +50,7 @@ const styles = cva(
   },
 );
 
-type Diamond = Omit<
-  React.ComponentPropsWithoutRef<"span">,
-  "children" | "color"
-> &
+type Diamond = Omit<React.ComponentPropsWithoutRef<"span">, "children" | "color"> &
   VariantProps<typeof styles>;
 
 export function Diamond({
@@ -64,9 +63,7 @@ export function Diamond({
 }: Diamond) {
   return (
     <span
-      className={cn(
-        styles({ variant, backgroundColor, borderColor, size, className }),
-      )}
+      className={cn(styles({ variant, backgroundColor, borderColor, size, className }))}
       {...props}
     />
   );

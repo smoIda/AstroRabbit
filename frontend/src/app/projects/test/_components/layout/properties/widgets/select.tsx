@@ -33,7 +33,7 @@ export function SelectInput({ value, options, onChange }: ConfigWidget["SELECT"]
       <Button
         onClick={() => setIsOpen((prev) => !prev)}
         size="md"
-        className="bg-ink-soft/5 text-ink w-full justify-between py-2 hover:outline focus:outline"
+        className="bg-ink/2 text-ink w-full justify-between py-2 hover:outline focus:outline"
       >
         <span>{formatText(chosen)}</span>
 
@@ -51,7 +51,7 @@ export function SelectInput({ value, options, onChange }: ConfigWidget["SELECT"]
                 onChange(option);
                 setIsOpen(false);
               }}
-              className="hover:bg-ink-soft/5 flex cursor-pointer items-center justify-between p-2"
+              className="hover:bg-ink/2 flex cursor-pointer items-center justify-between p-2"
             >
               <span className={option === chosen ? "text-accent-ink font-bold" : "text-ink"}>
                 {formatText(option)}

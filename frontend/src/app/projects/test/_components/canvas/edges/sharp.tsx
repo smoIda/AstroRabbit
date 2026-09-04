@@ -43,16 +43,16 @@ export function Sharp({
 
   const colorClass = cn(
     "stroke-ink fill-none stroke-2 transition-colors duration-200",
-    status === "RUNNING" && "stroke-amber-400 [stroke-dasharray:8] animate-edge-running",
-    status === "FINISHED" && "stroke-emerald-500",
-    status === "SKIPPED" && "stroke-ink-soft/10",
+    status === "RUNNING" && "stroke-info-ink [stroke-dasharray:8] animate-edge-running",
+    status === "FINISHED" && "stroke-success-ink",
+    status === "SKIPPED" && "stroke-ink/20",
   );
 
   const markerStrokeClass = cn(
     "stroke-ink fill-none",
-    status === "RUNNING" && "stroke-amber-400",
-    status === "FINISHED" && "stroke-emerald-500",
-    status === "SKIPPED" && "stroke-ink-soft/10",
+    status === "RUNNING" && "stroke-info-ink",
+    status === "FINISHED" && "stroke-success-ink",
+    status === "SKIPPED" && "stroke-ink/20",
   );
 
   return (

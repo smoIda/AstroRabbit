@@ -10,11 +10,11 @@ type Title = {
 
 export function Title({ label, hasData, info }: Title) {
   return (
-    <div className="text-ink flex items-center justify-between">
-      <span className="text-xs font-semibold">{label}</span>
+    <div className="flex items-center justify-between">
+      <span className="text-ink text-xs font-semibold">{label}</span>
 
       {!hasData && info && (
-        <div className="text-ink-soft flex items-center justify-center gap-x-2">
+        <div className="flex items-center justify-center gap-x-2">
           <span className="text-xs">{info}</span>
 
           <Info size={12} />
@@ -41,5 +41,5 @@ export function WidgetType({
 }: {
   type: ConfigFieldMeta["widget"] | OutputFieldMeta["widget"];
 }) {
-  return <span className="text-ink-soft absolute -top-6 right-0 text-xs">{DATA_TYPE[type]}</span>;
+  return <span className="absolute -top-6 right-0 text-xs">{DATA_TYPE[type]}</span>;
 }

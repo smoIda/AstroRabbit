@@ -33,7 +33,7 @@ export function JsonInput({ value, onChange }: ConfigWidget["JSON"]) {
   useEffect(() => setText(value), [value]);
 
   return (
-    <div className="group bg-ink-soft/5 relative focus-within:outline hover:outline">
+    <div className="group bg-ink/5 relative focus-within:outline hover:outline">
       <Button
         size="icon"
         aria-label="Copy"
@@ -70,7 +70,7 @@ export function JsonOutput({ value }: OutputWidget["JSON"]) {
   };
 
   return (
-    <div className="bg-ink-soft/5 relative focus-within:outline">
+    <div className="bg-ink/2 relative focus-within:outline">
       <Button
         size="icon"
         aria-label="Copy"

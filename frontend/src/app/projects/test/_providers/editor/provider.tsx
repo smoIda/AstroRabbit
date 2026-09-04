@@ -32,6 +32,8 @@ export const EditorActionContext = createContext<EditorActionContextValue | unde
 
 function editorActions(dispatch: React.Dispatch<ActionEditor>) {
   return {
+    reset: () => dispatch({ type: "RESET_RUNTIME" }),
+
     selectTool: (toolId: ToolboxItem["id"]) => dispatch({ type: "SELECT_TOOL", payload: toolId }),
 
     patchBadge: (nodeId: string, method: "CREATE" | "DELETE", badge: string) =>

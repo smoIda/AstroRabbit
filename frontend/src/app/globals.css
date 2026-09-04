@@ -1,25 +1,20 @@
 @import "tailwindcss";
 
 @theme {
+  /*
+  Icons: opacity-40 (e.g text-ink/40)
+  Backgrounds: opacity-2 (e.g Input background: bg-ink/2)
+  Dividers: opacity-20 (e.g border-ink/20)
+  */
   --color-ink: #16161a;
-  --color-ink-soft: #5f5f64;
-
   --color-white-ink: #f7f7f7;
-  --color-white-ink-soft: #c2c2c2;
-
   --color-accent-ink: #0f766e;
-  --color-accent-ink-soft: #2a9d95;
-
-  --color-destructive-ink: #d7294f;
-  --color-success-ink: #15803d;
-  --color-warning-ink: #d97706;
   --color-info-ink: #2563eb;
+  --color-success-ink: #15803d;
+  --color-destructive-ink: #d7294f;
+  --color-warning-ink: #d97706;
 
-  --font-headline: var(--font-headline)
-    /*
-  OLD
-  --color-accent-ink: #a1ab91;
-  --color-accent-ink-soft: #b7beaa; */;
+  --font-headline: var(--font-headline);
 }
 
 @layer utilities {
@@ -33,16 +28,16 @@
   }
 
   .custom-scroll::-webkit-scrollbar-thumb {
-    background: var(--color-ink-soft);
+    background: color-mix(in srgb, var(--color-ink) 40%, transparent);
   }
 
   .custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--color-ink-soft);
+    background: color-mix(in srgb, var(--color-ink) 80%, transparent);
   }
 }
 
 #main {
-  color: var(--color-ink-soft);
+  color: color-mix(in srgb, var(--color-ink) 80%, transparent);
 }
 
 #main-background {

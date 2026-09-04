@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { useConnection, useStore } from "@xyflow/react";
 
@@ -27,6 +27,8 @@ import { cn } from "@/lib/utils/cn";
 import { formatText } from "@/lib/utils/formatText";
 
 export function BaseNode({ id, type, data, selected, className, handles, configIcons }: BaseNode) {
+  const [isRenaming, setIsRenaming] = useState(false);
+
   const NodeIcon = data.icon;
   const StatusIcon = STATUS_ICONS[data.runtime.status].icon;
 
@@ -66,7 +68,12 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
           </div>
 
           <div className="flex w-full min-w-0 flex-col">
-            <NodeLabel label={data.label} onChange={onLabelChange} />
+            <NodeLabel
+              label={data.label}
+              isRenaming={isRenaming}
+              onRenamingChange={setIsRenaming}
+              onChange={onLabelChange}
+            />
 
             <div
               onWheel={(e) => {
@@ -82,7 +89,7 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
               }}
               className="nowheel flex w-full scrollbar-none items-center gap-x-2 overflow-x-auto"
             >
-              <Badge color="accent-soft">{formatText(type)}</Badge>
+              <Badge color="accent">{formatText(type)}</Badge>
 
               {data.badge.length > 0 &&
                 data.badge.map((badge) => {
@@ -106,7 +113,7 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
                 size="icon"
                 className="nodrag nopan p-0"
               >
-                <PlusSquare size={16} className="text-ink-soft active:bg-accent-ink" />
+                <PlusSquare size={16} className="active:bg-accent-ink" />
               </Button>
             </div>
           </div>
@@ -121,15 +128,9 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
           )}
         >
           <div className="overflow-hidden">
-            <div className="border-ink/10 relative flex w-full flex-col items-start gap-y-2 border-t-2 border-dashed p-2">
+            <div className="border-ink/20 relative flex w-full flex-col items-start gap-y-2 border-t-2 border-dashed p-2">
               {getVisibleConfigs(type, data.config).map(([key, value]) => {
-                const Icon =
-                  configIcons[
-                    key
-                      .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
-                      .replace(/[-\s]+/g, "_")
-                      .toUpperCase()
-                  ];
+                const Icon = configIcons[formatText(key).toUpperCase()];
 
                 const formattedValue =
                   typeof value === "object" && value !== null ? toJSON(value) : toString(value);
@@ -137,10 +138,9 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
                 return (
                   <div key={key} className="flex w-full items-center justify-between">
                     <div className="flex items-center gap-x-2">
-                      {Icon && <Icon size={12} strokeWidth={2} className="text-ink-soft/60" />}
-                      <span className="text-xs font-semibold uppercase">
-                        {formatText(key)}
-                      </span>
+                      {Icon && <Icon size={12} strokeWidth={2} className="text-ink/40" />}
+
+                      <span className="text-xs font-semibold uppercase">{formatText(key)}</span>
                     </div>
 
                     <span className="w-40 truncate text-right text-xs">{formattedValue}</span>
@@ -151,9 +151,9 @@ export function BaseNode({ id, type, data, selected, className, handles, configI
           </div>
         </div>
 
-        <div className="border-ink/10 flex w-full items-center justify-between gap-x-2 border-t-2 border-dashed p-2">
+        <div className="border-ink/20 flex w-full items-center justify-between gap-x-2 border-t-2 border-dashed p-2">
           <div className="flex items-center justify-between gap-x-2">
-            <Clock size={12} strokeWidth={2} className="text-ink-soft/60" />
+            <Clock size={12} strokeWidth={2} className="text-ink/40" />
 
             <span className="text-xs font-medium">
               {formatDuration(Number(data.runtime.duration))}

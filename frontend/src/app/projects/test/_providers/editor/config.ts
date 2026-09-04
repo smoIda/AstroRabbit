@@ -37,6 +37,7 @@ export type InitialEditor = {
 };
 
 export type ActionEditor =
+  | { type: "RESET_RUNTIME" }
   | { type: "SELECT_TOOL"; payload: ToolboxItem["id"] }
   | { type: "PATCH_BADGE"; payload: { nodeId: string; method: "CREATE" | "DELETE"; badge: string } }
   | { type: "CREATE_NODE"; payload: CanvasNode["type"] }

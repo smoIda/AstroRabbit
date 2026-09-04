@@ -22,15 +22,13 @@ export async function executeProgram(request: ExecutionRequest): Promise<string>
   return data.executionId;
 }
 
-export async function abortProgram(executionId: string): Promise<string> {
+export async function abortProgram(executionId: string): Promise<void> {
   const res = await fetch(`${API_URL}/executor/${executionId}/abort`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
   });
 
   if (!res.ok) throw new Error("Failed to abort program");
-
-  return res.json();
 }
 
 export async function skipNode({
@@ -39,13 +37,11 @@ export async function skipNode({
 }: {
   executionId: string;
   nodeId: string;
-}): Promise<string> {
+}): Promise<void> {
   const res = await fetch(`${API_URL}/executor/${executionId}/nodes/${nodeId}/skip`, {
     method: "POST",
     headers: { "Content-type": "application/json" },
   });
 
   if (!res.ok) throw new Error(`Failed to skip node id: ${nodeId} at execution id: ${executionId}`);
-
-  return res.json();
 }

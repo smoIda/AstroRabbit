@@ -12,11 +12,12 @@ const styles = cva("pointer-events-none absolute select-none", {
 
     color: {
       black: "bg-ink",
-      "black-soft": "bg-ink-soft",
       white: "bg-white-ink",
-      "white-soft": "bg-white-ink-soft",
       accent: "bg-accent-ink",
-      "accent-soft": "bg-accent-ink-soft",
+      info: "bg-info-ink",
+      success: "bg-success-ink",
+      destructive: "bg-destructive-ink",
+      warning: "bg-warning-ink",
     },
 
     size: { xs: "size-2", sm: "size-3", md: "size-3.5", lg: "size-4" },
@@ -34,13 +35,7 @@ type Bracket = Omit<React.ComponentPropsWithoutRef<"span">, "children"> &
 
 type BracketGroup = Omit<Bracket, "position">;
 
-export function Bracket({
-  position,
-  color,
-  size,
-  className,
-  ...props
-}: Bracket) {
+export function Bracket({ position, color, size, className, ...props }: Bracket) {
   return (
     <span
       style={{
@@ -52,17 +47,9 @@ export function Bracket({
   );
 }
 
-export function BracketGroup({
-  color,
-  size,
-  className,
-  ...props
-}: BracketGroup) {
+export function BracketGroup({ color, size, className, ...props }: BracketGroup) {
   return (
-    <div
-      className={cn("pointer-events-none absolute inset-0", className)}
-      {...props}
-    >
+    <div className={cn("pointer-events-none absolute inset-0", className)} {...props}>
       <Bracket position="top-left" color={color} size={size} />
       <Bracket position="top-right" color={color} size={size} />
       <Bracket position="bottom-left" color={color} size={size} />

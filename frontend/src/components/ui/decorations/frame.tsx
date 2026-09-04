@@ -13,11 +13,12 @@ const styles = cva(
     variants: {
       color: {
         black: "text-ink",
-        "black-soft": "text-ink-soft",
         white: "text-white-ink",
-        "white-soft": "text-white-ink-soft",
         accent: "text-accent-ink",
-        "accent-soft": "text-accent-ink-soft",
+        info: "text-info-ink",
+        success: "text-success-ink",
+        destructive: "text-destructive-ink",
+        warning: "text-warning-ink",
       },
     },
 

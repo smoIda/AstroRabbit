@@ -28,14 +28,19 @@ export const EngineContext = createContext<EngineContextValue | null>(null);
 export function EngineProvider({ children }: { children: React.ReactNode }) {
   const { state: editorState } = useEditorState();
   const { action: editorAction } = useEditorAction();
+
   const { state: executorState, action: executorAction } = useExecutor();
+
   const stream = useStream(executorAction, editorAction);
 
   const executeMutation = useMutation({
     mutationKey: [...QUERY_KEYS.EXECUTOR, "execute"],
     mutationFn: executeProgram,
 
-    onMutate: () => executorAction.reset(),
+    onMutate: () => {
+      editorAction.reset();
+      executorAction.reset();
+    },
     onSuccess: (executionId) => {
       executorAction.setId(executionId);
       stream.subscribe(executionId);

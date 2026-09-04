@@ -6,6 +6,7 @@ import { MousePointerClick } from "lucide-react";
 
 import { useEditorAction, useEditorState } from "@/app/projects/test/_hooks/use-editor";
 import { useEngine } from "@/app/projects/test/_hooks/use-engine";
+import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 import { PropertiesBanner } from "@/app/projects/test/_components/layout/properties/banner/main";
 import { PropertiesConnections } from "@/app/projects/test/_components/layout/properties/connections/main";
 import { PropertiesInputs } from "@/app/projects/test/_components/layout/properties/inputs/main";
@@ -16,7 +17,6 @@ import { Frame } from "@/components/ui/decorations/frame";
 import { Button } from "@/components/ui/primitives/button";
 
 import { cn } from "@/lib/utils/cn";
-import { useExecutor } from "@/app/projects/test/_hooks/use-executor";
 
 export function Properties() {
   const { query: editorQuery } = useEditorState();
@@ -53,6 +53,16 @@ export function Properties() {
     window.addEventListener("mouseup", onMouseUp);
   };
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   const node = editorQuery.activeNode;
 
   useEffect(() => {
@@ -76,8 +86,10 @@ export function Properties() {
                   type={node.type}
                   icon={node.data.icon}
                   label={node.data.label}
+                  nodeStatus={node.data.runtime.status}
                   executorStatus={executorState.status}
                   onClose={() => setIsOpen(false)}
+                  onLabelChange={(v) => editorAction.patchNodeBranding(node.id, v)}
                   onExecute={execution.execute}
                   onNodeSkip={currentNode.skip}
                   onDelete={editorAction.deleteNode}
@@ -99,12 +111,23 @@ export function Properties() {
                 </div>
               </div>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-y-2 p-4 text-center">
-                <MousePointerClick size={28} className="text-ink-soft/60" />
+              <div className="text-ink flex h-full flex-col items-center justify-center gap-y-2 p-4 text-center">
+                <MousePointerClick size={28} />
 
-                <span className="text-ink-soft text-xs font-medium tracking-wider uppercase">
+                <span className="text-xs font-medium tracking-wider uppercase">
                   Select a node to inspect properties
                 </span>
+
+                <Button
+                  onClick={() => setIsOpen(false)}
+                  variant="border"
+                  size="sm"
+                  className="mt-2 gap-x-2 border"
+                >
+                  <span>Dismiss</span>
+
+                  <kbd className="border-ink/20 text-ink border px-2 py-0.5 text-[10px]">ESC</kbd>
+                </Button>
               </div>
             )}
           </Frame>

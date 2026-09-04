@@ -22,8 +22,8 @@ function Display({ node, siblingType }: Display) {
   const Icon = node.data.icon;
 
   return (
-    <div key={node.id} className="bg-ink-soft/5 flex items-center justify-between gap-x-2 p-2">
-      <Icon size={16} className="text-ink-soft/60" />
+    <div key={node.id} className="bg-ink/2 flex items-center justify-between gap-x-2 p-2">
+      <Icon size={16} className="text-ink/40" />
 
       <span className="text-ink mr-auto min-w-0 truncate">{node.data.label}</span>
 

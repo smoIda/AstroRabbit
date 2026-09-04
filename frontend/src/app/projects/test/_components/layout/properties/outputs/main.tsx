@@ -91,14 +91,14 @@ export function PropertiesOutputs({ nodeType, output }: PropertiesOutputs) {
 
             return (
               <div key={key} className="relative space-y-2 pl-4">
-                <Diamond borderColor="black-soft" className="absolute top-1.25 left-0 opacity-40" />
+                <Diamond borderColor="black" className="absolute top-1.25 left-0" />
 
                 <Badge className={cn("border-0", randomBadgeColor(key))} size="md">
                   {key}
                 </Badge>
 
                 {hasGroup ? (
-                  <div className="bg-ink-soft/5 flex items-center gap-2 p-2 text-xs">
+                  <div className="bg-ink/2 flex items-center gap-2 p-2 text-xs">
                     {fields.map(({ key }) => (
                       <span className="text-ink" key={key}>
                         {String((output as Record<string, unknown>)[key] ?? "")}

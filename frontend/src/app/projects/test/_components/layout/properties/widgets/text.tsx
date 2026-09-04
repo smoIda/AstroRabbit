@@ -18,7 +18,7 @@ export function TextInput({ value, onChange }: ConfigWidget["TEXT"]) {
           setText(e.target.value);
           onChange(e.target.value);
         }}
-        className="bg-ink-soft/5 hover:outline text-ink w-full p-2 focus:outline"
+        className="bg-ink/2 text-ink w-full p-2 hover:outline focus:outline"
       />
 
       <WidgetType type="TEXT" />
@@ -28,8 +28,8 @@ export function TextInput({ value, onChange }: ConfigWidget["TEXT"]) {
 
 export function TextOutput({ value }: OutputWidget["TEXT"]) {
   return (
-    <div className="bg-ink-soft/5 relative">
-      <input className="text-ink p-2 outline-none" value={value} readOnly />
+    <div className="relative">
+      <input className="text-ink bg-ink/2 w-full p-2 outline-none" value={value} readOnly />
 
       <WidgetType type="TEXT" />
     </div>

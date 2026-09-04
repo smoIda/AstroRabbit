@@ -12,16 +12,18 @@ const styles = cva(
       },
 
       color: {
-        black: "border-ink text-ink bg-ink/5",
-        "black-soft": "border-ink-soft text-ink-soft bg-ink-soft/5",
-        white: "border-white-ink text-white-ink bg-white-ink/5",
-        "white-soft": "border-white-ink-soft text-white-ink-soft bg-white-ink-soft/5",
-        accent: "border-accent-ink text-accent-ink bg-accent-ink/5",
-        "accent-soft": "border-accent-ink-soft text-accent-ink-soft bg-accent-ink-soft/5",
+        black: "border-ink text-ink bg-ink/10",
+        white: "border-white-ink text-white-ink bg-white-ink/10",
+        accent: "border-accent-ink text-accent-ink bg-accent-ink/10",
+        info: "border-info-ink text-info-ink bg-info-ink/10",
+        success: "border-success-ink text-success-ink bg-success-ink/10",
+        destructive: "border-destructive-ink text-destructive-ink bg-destructive-ink/10",
+        warning: "border-warning-ink text-warning-ink bg-warning-ink/10",
       },
     },
 
     defaultVariants: {
+      color: "black",
       size: "sm",
     },
   },
